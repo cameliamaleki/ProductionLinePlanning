@@ -1,0 +1,479 @@
+﻿@using Core;
+@model Sell.LendingCars.TahvilAmaniModel
+
+<style type="text/css">
+    .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody {
+        overflow-x: visible !important;
+    }
+</style>
+
+<script type="text/javascript">
+
+
+
+
+    $(document).ready(function (e) {
+        SetLayout();
+
+        LendigCarsamaniGriddt = undefined;
+
+        $("#TA_Recevier").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/Contract/searchAgents'
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 2
+        });
+
+
+    });
+    $(document).on("change", "#TA_Recevier", function (e) {
+
+
+
+
+    })
+    $(document).on("click", "#LendingCarsShowButton", function (e) {
+
+
+
+
+
+        LoadLendingCarsamani($("#TA_Recevier").val())
+
+    });
+
+
+    $(document).on("click", "#LendingCarsShowCustomer", function (e) {
+
+
+        var CMID = $('#LendigCaramaniGrid').DataTable().row($('#LendigCaramaniGrid tbody tr.selected')).data().CMID;
+
+        var aa = window.open("/ContractCustomer/Detail/" + CMID, "a", "height=" + screen.height + ",width=" + screen.width + ",modal=yes,alwaysRaised=yes,menubar=no");
+
+    });
+
+    $(document).on("change", "input:radio[name=TA_RecevierType]", function (e) {
+        var id = $('input:radio[name=TA_RecevierType]:checked').val();
+
+
+        $("#TA_Recevier").empty();
+        option = $('<option>').text("انتخاب کنید").val("0");
+        $("#TA_Recevier").append(option);
+
+        $("#TA_Recevier").trigger("chosen:updated");
+
+
+        if (id == 4) {
+            $("#DeliverAgent").css({ "display": "none" });
+            $("#NameDeliver").css({ "display": "" });
+        }
+        else {
+            $("#DeliverAgent").css({ "display": "" });
+            $("#NameDeliver").css({ "display": "none" });
+
+            if (id == 1) {
+                //agent
+
+                try {
+                    $("#TA_Recevier").chosen("destroy");
+                }
+                catch (e) { }
+
+                $("#TA_Recevier").ajaxChosen({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: '/Contract/searchAgents'
+                }, {
+                    processItems: function (data) {
+                        console.log(data);
+                        return data.results;
+                    },
+                    minLength: 2
+                });
+
+            }
+            else if (id == 2) {
+                try {
+                    $("#TA_Recevier").chosen("destroy");
+                }
+                catch (e) { }
+
+                $("#TA_Recevier").ajaxChosen({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: '/LendingCars/SearchKargozaran'
+                }, {
+                    processItems: function (data) {
+                        console.log(data);
+                        return data.results;
+                    },
+                    minLength: 2
+                });
+                //kargozaran
+            }
+            else if (id == 3) {
+                try {
+                    $("#TA_Recevier").chosen("destroy");
+                }
+                catch (e) { }
+
+                $("#TA_Recevier").ajaxChosen({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: '/LendingCars/SearchBarbari'
+                }, {
+                    processItems: function (data) {
+                        console.log(data);
+                        return data.results;
+                    },
+                    minLength: 2
+                });
+                //barbari
+            }
+
+
+        }
+    });
+
+    var LendigCarsamaniGriddt;
+    function LoadLendingCarsamani(agentid) {
+
+
+        var Delivf = $('input:radio[name=TA_RecevierType]:checked').val();
+
+        var TypeDeliver = $('input:radio[name=TA_TahvilType]:checked').val();
+
+        var NameDelivF = "";
+        if (Delivf == 4) {
+            NameDelivF = $("#NameDeliver").val();
+        }
+
+
+
+
+
+
+        var FromDate = $("#TA_FromDate").val();
+
+        var ToDate = $("#TA_ToDate").val();
+
+        var address = "/LendingCars/GetDeliverCars?AGNID=" + agentid + "&Delivf=" + Delivf + "&TypeDeliver=" + TypeDeliver + "&NameDelivF=" + NameDelivF + "&FromDate=" + FromDate + "&ToDate=" + ToDate;
+        index = 0;
+        SelectedContractDetailRow = null;
+        if (LendigCarsamaniGriddt == undefined) {
+            LendigCarsamaniGriddt = $('#LendigCaramaniGrid').DataTable({
+                "processing": true,
+                "jQueryUI": false,
+                "scrollCollapse": true,
+                "paging": true,
+                "bAutoWidth": false,
+                "bSort": false,
+                "responsive": (IsMobileDevice) ? true : false,
+                "scrollX": true,
+                "ajax": address,
+                "columns": [
+
+                    {
+                        "data": "Days",
+                        "title": "ردیف",
+                        "width": "150px"
+                    },
+                    {
+                        "data": "CNTID",
+                        "title": "شماره قرارداد",
+                        "width": "150px"
+                    },
+                    {
+                        "data": "CustName",
+                        "title": "نام مشتری",
+                        "width": "150px"
+                    },
+                    {
+                        "data": "CustPhone",
+                        "title": "شماره تلفن",
+                        "width": "150px"
+                    },
+                    {
+                        "data": "MobileNo",
+                        "title": "موبایل",
+                        "width": "150px"
+                    },
+
+
+               {
+                   "data": "CarName",
+                   "title": "نام محصول",
+                   "width": "150px"
+               },
+               {
+                   "data": "ShasiNO",
+                   "title": "شماره شاسی",
+                   "width": "150px"
+               },
+                 {
+                     "data": "MotorNO",
+                     "title": "شماره موتور",
+                     "width": "150px"
+                 },
+                   {
+                       "data": "BodyNO",
+                       "title": "شماره بدنه",
+                       "width": "150px"
+                   },
+    {
+        "data": "pt_desc",
+        "title": "رنگ",
+        "width": "150px"
+    },
+     {
+         "data": "AGNCode",
+         "title": "کد نمایندگی",
+         "width": "150px"
+     },
+              {
+                  "data": "AGNDesc",
+                  "title": "نام نمایندگی",
+                  "width": "150px"
+              },
+                {
+                    "data": "ExitCardNo",
+                    "title": "شماره برگه خروج",
+                    "width": "150px"
+                },
+                  {
+                      "data": "DeliveryDate",
+                      "title": "تاریخ خروج",
+                      "width": "150px"
+                  },
+                    {
+                        "data": "FactNo",
+                        "title": "شماره فاکتور",
+                        "width": "150px"
+                    },
+                      {
+                          "data": "FactDate",
+                          "title": "تاریخ فاکتور",
+                          "width": "150px"
+                      },
+                        {
+                            "data": "NameDelivF",
+                            "title": "تحویل گیرنده",
+                            "width": "150px"
+                        },
+                          {
+                              "data": "Decorate",
+                              "title": "تودوزی",
+                              "width": "150px"
+                          },
+                            {
+                                "data": "ProductDate",
+                                "title": "تاریخ تولید",
+                                "width": "150px"
+                            },
+
+                ],
+                "columnDefs": [
+
+                 {
+                     "render": function (data, type, row) {
+                         //row.Mail_Subject
+                         return ++index;
+                     },
+                     "targets": 0,
+                 }],
+
+                "createdRow": function (row, data, index) {
+
+                    //if (data.isRead == false) {
+                    //    $('td', row).addClass('highlight');
+                    //}
+                    //else {
+                    //    $('td', row).addClass('readed');
+                    //}
+
+                }
+
+            });
+
+
+            var detailRows = [];
+
+            $('#LendigCaramaniGrid tbody').on('click', 'tr', function () {
+                //Select Row
+
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    LendigCarsamaniGriddt.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    var row = LendigCarsamaniGriddt.row($(this));
+
+                }
+
+            });
+        }
+        else {
+            LendigCarsamaniGriddt.ajax.url(address).load(function () {
+                HideLoading();
+            });
+        }
+
+
+    }
+
+
+
+
+
+
+    $("#btntahvilamani").click(function () {
+        var address = "/LendingCars/Viewer?TA_FromDate=" + $("#TA_FromDate").val() + "&TA_ToDate=" + $("#TA_ToDate").val() + "&TA_Recevier=" + $("#TA_Recevier").val() + "&TA_RecevierType=" + $('input:radio[name=TA_RecevierType]:checked').val() + "&TA_TahvilType=" + $('input:radio[name=TA_TahvilType]:checked').val();
+        var aa = window.open(address, "a", "height=" + screen.height + ",width=" + screen.width + ",modal=yes,alwaysRaised=yes,menubar=no");
+    });
+
+
+
+
+    $('#TA_FromDate , #TA_ToDate').datepicker({
+
+
+        buttonImageOnly: true,
+        dateFormat: 'yy/mm/dd',
+        changeYear: true,
+        changeMonth: true
+
+
+    });
+</script>
+
+<style>
+    .ww {
+        min-width: 500px;
+    }
+</style>
+
+@using (Html.BeginForm("TahvilAmani", "LendingCars", FormMethod.Post, new { id = "frmregistryprint", @class = "form-horizontal" }))
+{
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span4" style="float: right">
+            <div class="form-horizontal">
+                <div class="user-line">
+                    <div class="slabel">
+
+
+                        @Html.LabelFor(model => model.TA_FromDate)
+                    </div>
+
+                    @Html.EditorFor(model => model.TA_FromDate, new { @class = "span6" })
+                    @Html.ValidationMessageFor(model => model.TA_FromDate)
+                </div>
+            </div>
+        </div>
+        <div class="span4" style="float: right">
+            <div class="form-horizontal">
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.TA_ToDate)
+                    </div>
+
+                    @Html.EditorFor(model => model.TA_ToDate, new { @class = "span6" })
+                    @Html.ValidationMessageFor(model => model.TA_ToDate)
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span6" style="float: right">
+            <div class="form-horizontal" style="float: right;">
+                <div class="user-line" style="margin-right: 24px;">
+                    @*<div class="slabel">
+                            @Html.LabelFor(model => model.TA_RecevierType)
+                        </div>*@
+                    <span style="float:right;margin-left:10px">
+                        نماینده
+                        @Html.RadioButtonFor(model => model.TA_RecevierType, 0, new { Checked = "checked" })
+                    </span>
+                    <span style="float:right;margin-left:10px">
+                        کارگزاران
+                        @Html.RadioButtonFor(model => model.TA_RecevierType, 1)
+                    </span>
+                    <span style="float:right;margin-left:10px">
+                        موسسات باربری
+                        @Html.RadioButtonFor(model => model.TA_RecevierType, 2)
+                    </span>
+                    <span style="float:right;margin-left:10px">
+                        سایر
+                        @Html.RadioButtonFor(model => model.TA_RecevierType, 3)
+                    </span>
+                    <span style="float:right;margin-left:10px">
+                        هیچکدام
+                        @Html.RadioButtonFor(model => model.TA_RecevierType, 4)
+                    </span>
+
+                    @Html.ValidationMessageFor(model => model.TA_RecevierType)
+                </div>
+            </div>
+        </div>
+        <div class="span4" style="float: right">
+            <div class="form-horizontal" style="float: right;">
+                <div class="user-line" style="margin-right: -10px;">
+                    @*<div class="slabel">
+                            @Html.LabelFor(model => model.TA_TahvilType)
+                        </div>*@
+                    <span style="float:right;margin-left:10px">
+                        تحویل قطعی
+                        @Html.RadioButtonFor(model => model.TA_TahvilType, 0, new { Checked = "checked" })
+                    </span>
+                    <span style="float:right;margin-left:10px">
+                        تحویل امانی
+                        @Html.RadioButtonFor(model => model.TA_TahvilType, 1)
+                    </span>
+                    @Html.ValidationMessageFor(model => model.TA_TahvilType)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span11" style="float: right;direction:rtl">
+            <div class="form-horizontal">
+
+                <div class="user-line" style="">
+                    <div class="slabel" style="width: 113px;">
+                        @Html.LabelFor(model => model.TA_Recevier)
+                    </div>
+                    <div id="DeliverAgent">
+                        @Html.DropDownListFor(model => model.TA_Recevier, new Sell.Agents.Agents().GetAllList(10).ToComboBoxListItem(model => model.Agent_AGNDesc, model => model.Agent_AGNID, true, ""), new { @class = "input-xxlarge Contract_F_AgencyID chosenajax", data_placeHolder = "انتخاب کنید", data_width = "550px" })
+                        @Html.ValidationMessageFor(model => model.TA_Recevier)
+                    </div>
+                    <input type="text" id="NameDeliver" style="display:none;" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <table id="LendigCaramaniGrid"></table>
+
+
+    @* @Html.ActionLink("چاپ","Viewer", null, new { @class="btn btn-large btn-block btn-info" })*@
+
+    <div class="row-fluid" style="">
+        <div class="span2" id="span2" style="float: right; text-align: center; margin-left: 2.76243%;margin-right:35px">
+            <input type="button" class=" btn btn-large btn-block btn-info" id="LendingCarsShowButton" value="نمایش" />
+        </div>
+        @*<div class="span2" id="span2" style="float: right;text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-danger" id="LendingCarsShowCustomer" value="مشتری" />
+        </div>*@
+        <div class="span2" id="span2" style="float: right;text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-primary" id="btntahvilamani" value="چاپ" />
+
+        </div>
+
+    </div>
+}

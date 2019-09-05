@@ -1,0 +1,193 @@
+﻿@using Core;
+@model Sell.LendingCars.LendingCarsModel
+
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        SetLayout();
+        $("#btnLendingCarsCancel").prop("disabled", true)
+        $("#btnLendingCarsConfirm").prop("disabled", true)
+        $("#btnLendingCarsReject").prop("disabled", true)
+        $("#btnLendingCarsEdit").prop("disabled", true)
+        $("#btnLendingCarsNew").prop("disabled", false)
+        $("#LendigCarsSelectDetail").prop("disabled", true)
+        $("#btnLendingCarsOption").prop("disabled", true)
+
+        $("#LendigCarsSelectDetail").prop("disabled", true)
+        $('#DateA').datepicker({
+            dateFormat: 'yy/mm/dd'
+        }).mask("9999/99/99");
+        $("#IDrequstAmani").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/LendingCars/searchLendingCars'
+
+        }, {
+            processItems: function (data) {
+               
+                return data.results;
+            },
+            minLength: 2
+        });
+
+        if (IsAgent) {
+
+            $("#F_AgnID").removeClass("chosenajax");
+
+            $("#F_AgnID").selectpicker();
+
+            $("#F_AgnID").empty();
+            var option = $('<option>').text(AgentName).val(AgentCode);
+            $("#F_AgnID").append(option);
+
+            $("#F_AgnID").selectpicker('refresh');
+
+            //$(".Contract_F_AgencyID").accordion
+        } else {
+            $("#F_AgnID").ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '/Contract/searchAgents'
+
+            }, {
+                processItems: function (data) {
+                    console.log(data);
+                    return data.results;
+                },
+                minLength: 2
+            });
+        }
+
+
+    });
+</script>
+
+<style>
+    .wcontract {
+        width: 75% !important;
+    }
+
+    .LendigCarsSelectDetail {
+        float: right;
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    .PageNumbersInfo {
+        float: left;
+    }
+</style>
+<div id="LendingCarsDeleteDialog" style="text-align:right;display:none;">مایل به ابطال درخواست هستید ؟</div>
+
+@using (Html.BeginForm("Create", "LendingCars", FormMethod.Post, new { id = "frmLendingCars", @class = "form-horizontal" }))
+{
+
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span11" style="float: right;direction:rtl">
+            <div class="form-horizontal" style="margin-left: 30px;">
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.IDrequstAmani)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.IDrequstAmani, new Sell.LendingCars.LendingCars().GetAllComboBox(0, ""), new { @class = "input-xxlarge" })
+                    @Html.ValidationMessageFor(model => model.IDrequstAmani)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span4" style="float: right;direction:rtl">
+            <div class="form-horizontal" style="margin-left: 30px;">
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.code)
+                    </div>
+
+                    @Html.TextBoxFor(model => model.code, new { disabled = "disabled", @class = "span4 TextBoxAsLabel", @style = "color:red;" })
+                    <div style="color:red;display:none;" id="EbtalShow">درخواست ابطال شده است</div>
+                    @Html.ValidationMessageFor(model => model.code)
+                </div>
+            </div>
+        </div>
+
+
+        <div class="span4" style="float: right;direction:rtl">
+            <div class="form-horizontal" style="margin-left: 30px;">
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.DateA)
+                    </div>
+
+                    @Html.TextBoxFor(model => model.DateA)
+                    @Html.ValidationMessageFor(model => model.DateA)
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span11" style="float: right;direction:rtl">
+            <div class="form-horizontal" style="margin-left: 30px;">
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.F_AgnID)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.F_AgnID, new Sell.Agents.Agents().GetAllList(10).ToComboBoxListItem(model => model.Agent_AGNDesc, model => model.Agent_AGNID, true, ""), new { @class = "input-xxlarge Contract_F_CustomerID", data_placeHolder = "انتخاب کنید", data_width = "470px" })
+                    @Html.ValidationMessageFor(model => model.F_AgnID)
+                </div>
+                <div>
+
+
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="column">
+            <div class="slabel" style=" width: 10px;">
+                <input type="checkbox" id="FlgTaahodCheck" />
+                @Html.HiddenFor(model => model.FlgTaahod, new { @style = "float:left;" })
+            </div>
+            <div class="field" style="color:red;font-size:14px">
+                در صورت  عدم فروش ظرف 45 روز هزینه حمل و بیمه شخص ثالث بعهده این نمایندگی می باشد
+            </div>
+        </div>
+    </div>
+    <div style="margin-bottom:50px">
+
+        <table id="LendigCarsDetailGrid"></table>
+
+    </div>
+    <div class="row-fluid" style="">
+        <div class="span2" id="span2" style="float: right;
+margin-right: 5.564%;
+text-align: center;
+margin-left: 2.76243%;">
+            <input type="button" class=" btn btn-large btn-block btn-primary" id="btnLendingCarsNew" value="جدید" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-info" id="btnLendingCarsEdit" value="ویرایش" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-warning" id="btnLendingCarsReject" value="ابطال" />
+
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-danger" id="btnLendingCarsConfirm" value="تایید" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-info" id="btnLendingCarsCancel" value="انصراف" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-info" id="btnLendingCarsOption" value="آپشن" />
+        </div>
+    </div>
+}

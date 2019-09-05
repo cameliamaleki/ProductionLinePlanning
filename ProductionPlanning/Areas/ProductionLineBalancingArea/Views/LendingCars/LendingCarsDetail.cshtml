@@ -1,0 +1,325 @@
+﻿@using Core;
+@model Sell.LendingCars.LendingCarsDetailModel
+
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        SetLayout();
+
+
+        $("#Kargozaran").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/LendingCars/SearchKargozaran'
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 2
+        });
+        $("#Barbari").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/LendingCars/SearchBarbari'
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 2
+        });
+
+        $("#num").prop("readonly","readonly");
+
+        var AAmaniDetailId = @ViewBag.AmaniDetailId;
+        var ARowID=   @ViewBag.RowID;
+
+        $("#IDDetailReqAmani").val(AAmaniDetailId);
+        $("#RowID").val(ARowID);
+
+        if(AAmaniDetailId!=0 || ARowID!=0){
+            $("#btnLendingCarsDetailAdd").css({display:"none"});
+            $("#btnLendingCarsDetailEdit").css({display:""});
+            $("#btnLendingCarsDetailConfirm").css({display:"none"});
+
+
+            // load values
+            var i=0;
+            var Record;
+            for(i=0;i<LendingCarsDetailList.length;i++){
+                var aa= LendingCarsDetailList[i];
+                if(AAmaniDetailId!=0){
+                    if(aa.IDDetailReqAmani== AAmaniDetailId)
+                        Record=aa;
+                }
+                else {
+                    if(aa.radif== ARowID)
+                        Record=aa;
+                }
+            }
+            console.log(Record);
+            $("#Days").val(Record.Days);
+            $("#num").val(Record.num);
+
+            $.getJSON("/LendingCars/ContractDetailFillCombosNotSaved", { DetailItem: JSON.stringify(Record) }, function (data) {
+                console.log(data);
+
+                var option;
+                RefreshCombo("LendingCarsProductGroup", data.ProductGroup, data.ProductGroupId, false);
+
+
+                var address = "/Contract/GetContractDetailProductType?GroupId=" + $("#LendingCarsProductGroup").val();
+                LoadComboBox(address, "F_IDCar", false, function () {
+
+
+                    $("#F_IDCar").val(data.ProductTypeId);
+                    $("#F_IDCar").selectpicker('refresh');
+                });
+
+                RefreshCombo("F_UsageType", data.ProductUsage, data.ProductUsageId, false);
+
+                //  RefreshCombo("F_Deliver", data.DeliveryAddress, data.DeliveryAddressId, true);
+
+                $("#F_Deliver").val($("#F_AgnID").val());
+                $.get("/LendingCars/GetAgentName", {agentId:$("#F_AgnID").val()}, function(e){
+                    $("#F_DeliverName").html(e);
+                });
+
+            
+                $('input[name="DelivType"][value="' + Record.DelivType + '"]').prop('checked', true);
+            });
+
+
+        }
+        else {
+            $("#btnLendingCarsDetailAdd").css({display:""});
+            $("#btnLendingCarsDetailEdit").css({display:"none"});
+            $("#btnLendingCarsDetailConfirm").css({display:""});
+            $("input[name=DelivType][value=1]").attr('checked', 'checked');
+            //LoadComboBox("/Contract/GetAgent/" + AgentCode, "F_Deliver", true);
+            $("#F_Deliver").val($("#F_AgnID").val());
+            $.get("/LendingCars/GetAgentName", {agentId:$("#F_AgnID").val()}, function(e){
+                $("#F_DeliverName").html(e);
+            });
+
+
+        }
+
+        $("#F_IDCar").selectpicker();
+        $("#LendingCarsProductGroup").selectpicker();
+        $("#F_UsageType").selectpicker();
+
+        //$("#F_Deliver").ajaxChosen({
+        //    dataType: 'json',
+        //    type: 'POST',
+        //    url: '/Contract/searchAgents'
+
+        //}, {
+        //    processItems: function (data) {
+        //        console.log(data);
+        //        return data.results;
+        //    },
+        //    minLength: 2
+        //});
+
+
+
+        // if (IsAgent) {
+
+        //}
+    });
+
+
+
+
+
+
+</script>
+<style>
+    .ww {
+        min-width: 450px;
+    }
+</style>
+
+@using (Html.BeginForm("LendingCarsDetail", "LendingCars", FormMethod.Post, new { id = "frmLendingCarsDetail", @class = "form-horizontal" }))
+{
+
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span10" style="float: right">
+            <div class="form-horizontal" style="margin-left: 30px;">
+                <div class="user-line">
+
+                    @Html.HiddenFor(model => model.IDDetailReqAmani, new { @class = "span6" })
+                    @Html.Hidden("RowID", new { @class = "span6" })
+
+
+                    @Html.HiddenFor(model => model.F_IDrequstAmani, new { @class = "span6" })
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.Label("گروه محصول")
+                    </div>
+
+                    @Html.DropDownList("LendingCarsProductGroup", new Sell.Products.Products().GetProductGroupAll().ToComboBoxListItem(p => p.Name, p => p.Id, false, ""), new { @class = "span10 chosen ww" })
+                    @Html.ValidationMessageFor(model => model.F_IDCar)
+                </div>
+
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.F_IDCar)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.F_IDCar, new List<SelectListItem>(), new { @class = "span10 chosen ww", data_placeHolder = "انتخاب کنید" })
+                    @Html.ValidationMessageFor(model => model.F_IDCar)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.F_UsageType)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.F_UsageType, new List<SelectListItem>(), new { @class = "span10 chosen ww" })
+                    @Html.ValidationMessageFor(model => model.F_UsageType)
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row-fluid" style="float: right;" id="haghighi">
+        <div class="form-row" style="box-shadow: none;">
+            <label style="font-weight: bold; font-size: 14px; color: darkblue; display: block">تحویل گیرنده</label>
+
+        </div>
+        <div class="span12" style="float: right; margin-left: 0px; width: 104.905983%;">
+            <div class="form-horizontal">
+
+                <div class="user-line" style="direction: rtl">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.DelivType)
+                    </div>
+                    <span style="margin-right:10px;margin-left:10px;">
+                        @Html.RadioButtonFor(model => model.DelivType, 1)
+                        نماینده
+
+
+                    </span>
+                    <span style="margin-right:10px;margin-left:10px;">
+                        @Html.RadioButtonFor(model => model.DelivType, 2)
+                        کارگزاران
+
+                    </span>
+                    <span style="margin-right:10px;margin-left:10px;">
+                        @Html.RadioButtonFor(model => model.DelivType, 3)
+                        موسسات باربری
+
+                    </span>
+                    <span style="margin-right:10px;margin-left:10px;">
+                        @Html.RadioButtonFor(model => model.DelivType, 4)
+                        سایر
+
+                    </span>
+
+
+                    @Html.ValidationMessageFor(model => model.DelivType)
+
+                </div>
+
+
+
+
+                <div class="user-line" style="direction: rtl;" id="F_DeliverArea">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.F_Deliver)
+                    </div>
+
+                    @Html.HiddenFor(p => p.F_Deliver)
+                    <div id="F_DeliverName"></div>
+
+                    @*@Html.DropDownListFor(model => model.F_Deliver, new List<SelectListItem>(), new { @class = "span10 ww", data_placeHolder = "انتخاب کنید" })*@
+
+                    @Html.ValidationMessageFor(model => model.F_Deliver)
+
+                </div>
+
+                <div class="user-line" style="direction: rtl; display:none;" id="F_DeliverAreaKargozari">
+                    <div class="slabel">
+                        @Html.Label("کارگزاران")
+                    </div>
+
+
+
+                    @Html.DropDownList("Kargozaran", new List<SelectListItem>(), new { @class = "span10 ww", data_placeHolder = "انتخاب کنید" })
+
+                    @Html.ValidationMessageFor(model => model.F_Deliver)
+
+                </div>
+                <div class="user-line" style="direction: rtl; display:none;" id="F_DeliverAreaBarbari">
+                    <div class="slabel">
+                        @Html.Label("موسسات باربری")
+                    </div>
+
+
+
+                    @Html.DropDownList("Barbari", new List<SelectListItem>(), new { @class = "span10 ww", data_placeHolder = "انتخاب کنید" })
+
+                    @Html.ValidationMessageFor(model => model.F_Deliver)
+
+                </div>
+
+                <div class="user-line" style="direction: rtl;display:none;margin-bottom:5px;" id="F_DeliverTextArea">
+                    <div class="slabel">
+
+                        @Html.TextBox("F_DeliverText", "", new { @style = "width:514px;margin-bottom:5px" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+
+
+        <div class="span10" style="float: right; margin-left: 0px;">
+            <div class="form-horizontal">
+                <div class="user-line" style="direction: rtl">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.num)
+                    </div>
+                    @Html.TextBoxFor(model => model.num, new { @class = "span4 " })
+                    به مدت
+
+                    @Html.TextBoxFor(model => model.Days, new { @class = "span4 " })
+
+                    روز
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="row-fluid" style="margin-bottom: 10px">
+        <div class="span2" style="float: right; text-align: center; margin-left: 2.5641%; margin-right: 40px;">
+            <input type="button" class="btn btn-large btn-block btn-primary" id="btnLendingCarsDetailAdd" value="اضافه" />
+            <input type="button" class="btn btn-large btn-block btn-primary" id="btnLendingCarsDetailEdit" value="ثبت" />
+
+        </div>
+        <div class="span2" style="float: right; text-align: center; margin-left: 2.5641%;">
+            <input type="button" class="btn btn-large btn-block btn-warning" id="btnLendingCarsDetailConfirm" value="ثبت" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class="btn btn-large btn-block btn-danger" id="btnlendingcarsRemove" value="انصراف" />
+        </div>
+
+
+
+    </div>
+}
+
+

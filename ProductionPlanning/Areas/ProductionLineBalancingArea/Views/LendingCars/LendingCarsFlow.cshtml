@@ -1,0 +1,161 @@
+﻿@using Core;
+@model Sell.LendingCars.TahvilAmaniModel
+
+<style type="text/css">
+    .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody {
+        overflow-x: visible !important;
+    }
+</style>
+
+<script type="text/javascript">
+
+
+
+
+    $(document).ready(function (e) {
+        SetLayout();
+
+        LendigCarFlowGriddt = undefined;
+        LoadLendigCarFlowGrid();
+        
+
+    });
+ 
+ 
+    var LendigCarFlowGriddt;
+    function LoadLendigCarFlowGrid() {
+
+         
+
+        var address = "/LendingCars/GetLendingCarsFlow";
+        index = 0;
+         
+        if (LendigCarFlowGriddt == undefined) {
+            LendigCarFlowGriddt = $('#LendigCarFlowGrid').DataTable({
+                "processing": true,
+                "jQueryUI": false,
+                "scrollCollapse": true,
+                "paging": true,
+                "bAutoWidth": false,
+                "bSort": false,
+                "responsive": (IsMobileDevice) ? true : false,
+                "scrollX": true,
+                "ajax": address,
+                "columns": [
+
+                    {
+                        "data": "Days",
+                        "title": "ردیف",
+                        "width": "150px"
+                    },
+                    {
+                        "data": "code",
+                        "title": "کد",
+                        "width": "150px"
+                    },
+                    {
+                        "data": "radif",
+                        "title": "ردیف",
+                        "width": "150px"
+                    },
+                    {
+                        "data": "StatusDesc",
+                        "title": "وضعیت",
+                        "width": "150px"
+                    },
+                    {
+                        "data": "UserName",
+                        "title": "کاربر",
+                        "width": "150px"
+                    },
+
+
+               {
+                   "data": "StatusDate",
+                   "title": "تاریخ",
+                   "width": "150px"
+               },
+               {
+                   "data": "StatusTime",
+                   "title": "ساعت",
+                   "width": "150px"
+               },
+                 {
+                     "data": "Computer",
+                     "title": "کامپیوتر",
+                     "width": "150px"
+                 },
+                   {
+                       "data": "AGNCode",
+                       "title": "کد نمایندگی",
+                       "width": "150px"
+                   },
+    {
+        "data": "AGNDesc",
+        "title": "نام نمایندگی",
+        "width": "150px"
+    },
+     {
+         "data": "ShasiNO",
+         "title": "شماره شاسی",
+         "width": "150px"
+     }   
+
+                ],
+                "columnDefs": [
+
+                 {
+                     "render": function (data, type, row) {
+                         //row.Mail_Subject
+                         return ++index;
+                     },
+                     "targets": 0,
+                 }],
+
+                "createdRow": function (row, data, index) {
+
+                    //if (data.isRead == false) {
+                    //    $('td', row).addClass('highlight');
+                    //}
+                    //else {
+                    //    $('td', row).addClass('readed');
+                    //}
+
+                }
+
+            });
+
+
+            var detailRows = [];
+
+            $('#LendigCarFlowGrid tbody').on('click', 'tr', function () {
+                //Select Row
+
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    LendigCarFlowGriddt.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    var row = LendigCarFlowGriddt.row($(this));
+
+                }
+
+            });
+        }
+        else {
+            LendigCarFlowGriddt.ajax.url(address).load(function () {
+                HideLoading();
+            });
+        }
+
+
+    }
+
+     
+</script>
+
+ 
+ 
+    <table id="LendigCarFlowGrid"></table>
+     
