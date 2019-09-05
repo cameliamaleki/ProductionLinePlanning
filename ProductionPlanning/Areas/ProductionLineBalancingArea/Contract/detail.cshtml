@@ -1,0 +1,242 @@
+﻿@using Core;
+@model Sell.Contract.ContractModelView
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        SetLayout();
+
+
+        SelectedContractIdView = @ViewBag.ContractId;
+        LoadContractMasterView();
+        LoadContractDetailView();
+
+    });
+
+    $('#Contract_TahvilDateView , #Contract_CNTDateView').datepicker({
+        buttonImageOnly: true,
+        dateFormat: 'yy/mm/dd'
+    }).mask("9999/99/99");
+
+    $('#Contract_CNTDateView').mask("9999/99/99").attr('readonly', 'readonly');
+
+
+
+
+</script>
+
+<style>
+    .wcontract {
+        width: 75% !important;
+    }
+</style>
+
+
+
+@using (Html.BeginForm("Create", "Contract", FormMethod.Post, new { id = "frmCreateContractView", @class = "form-horizontal" }))
+{
+
+    @Html.HiddenFor(model => model.Contract_CNTIDView)
+
+    @Html.HiddenFor(model => model.Contract_StatusView)
+    @Html.HiddenFor(model => model.Contract_CntStatusView)
+    @Html.HiddenFor(model => model.Contract_IsOkbyAccountingView)
+    @Html.HiddenFor(model => model.Contract_F_cntTransferView)
+    @Html.HiddenFor(model => model.Contract_F_ParameterIDView)
+    @Html.HiddenFor(model => model.Contract_FlgOkContractView)
+    @Html.HiddenFor(model => model.Contract_TrackIDView)
+
+
+    @Html.HiddenFor(model => model.Contract_PelakOwnerView)
+    @Html.HiddenFor(model => model.Contract_RejectionReasonView)
+    @Html.HiddenFor(model => model.Contract_CNTSerialOldView)
+
+    <div class="row-fluid" style="float: right; ">
+        <div class="span2" style="float: right; margin-right:30px;">
+
+            <div class="slabel">
+
+                <div class="span2" id="lblContractSearchView" style="margin-left: 2.5641%; text-align: center; margin-bottom: 20px;">
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(e){
+
+            $(".Contract_F_AgencyIDView").change(function (e) {
+                try {
+                    $(".Contract_F_CustomerIDView").chosen("destroy");
+                }
+                catch (e) { }
+                $(".Contract_F_CustomerIDView").ajaxChosen({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: '/Contract/searchCustomers',
+                    data: { AgentId: $(".Contract_F_AgencyIDView").val() }
+
+                }, {
+                    processItems: function (data) {
+                        console.log(data);
+                        return data.results;
+                    },
+                    minLength: 2
+                });
+            });
+
+            if (IsAgent) {
+
+                $("#Contract_F_AgencyIDView").removeClass("chosenajax");
+
+                $("#Contract_F_AgencyIDView").selectpicker();
+
+                $("#Contract_F_AgencyIDView").empty();
+                var option = $('<option>').text(AgentName).val(AgentCode);
+                $("#Contract_F_AgencyIDView").append(option);
+
+                $("#Contract_F_AgencyIDView").selectpicker('refresh');
+
+                //$(".Contract_F_AgencyID").accordion
+            } else {
+                $(".Contract_F_AgencyIDView").ajaxChosen({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: '/Contract/searchAgents'
+
+                }, {
+                    processItems: function (data) {
+                        console.log(data);
+                        return data.results;
+                    },
+                    minLength: 2
+                });
+            }
+            $(".Contract_F_SponsorIDView").ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '/Contract/searchAgents'
+
+            }, {
+                processItems: function (data) {
+                    console.log(data);
+                    return data.results;
+                },
+                minLength: 2
+            });
+            $(".Contract_F_AgencyIDView").trigger("change");
+        });
+    </script>
+    <div class="row-fluid" style="float: right; ">
+        <div class="span7" style="float: right;direction:rtl">
+            <div class="form-horizontal" style="">
+                <div class="user-line">
+                    <div class="slabel" style="width:150px">
+                        @Html.LabelFor(model => model.Contract_F_AgencyIDView)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.Contract_F_AgencyIDView, new Sell.Agents.Agents().GetAllListCombo(""), new { @class = "Contract_F_AgencyIDView chosenajax", data_placeHolder = "انتخاب کنید", })
+                    @Html.ValidationMessageFor(model => model.Contract_F_AgencyIDView)
+                </div>
+
+                <div class="user-line">
+                    <div class="slabel" style="width:150px">
+                        @Html.LabelFor(model => model.Contract_F_CustomerIDView)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.Contract_F_CustomerIDView, new Sell.ContractCustomer.ContractCustomer().GetAllListCombo(""), new { @class = " Contract_F_CustomerIDView chosenajax", data_placeHolder = "انتخاب کنید" })
+
+                    @Html.ValidationMessageFor(model => model.Contract_F_CustomerIDView)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel" style="width:150px">
+                        @Html.LabelFor(model => model.Contract_F_SponsorIDView)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.Contract_F_SponsorIDView, new Sell.ContractCustomer.ContractCustomer().GetAllListCombo(""), new { @class = "wcontract Contract_F_SponsorIDView", data_placeHolder = "انتخاب کنید", data_width = "550px" })
+                    @Html.ValidationMessageFor(model => model.Contract_F_SponsorIDView)
+
+                </div>
+                <div class="user-line" style="float:right;margin-right:35px;margin-top:10px">
+                    @Html.CheckBoxFor(model => model.Contract_PublicSaleView)
+
+
+                    <div class="slabel" style="float:left;margin-right:10px">
+                        @Html.LabelFor(model => model.Contract_PublicSaleView)
+                    </div>
+                </div>
+                <div class="user-line" style="float:right;margin-top:10px">
+                    @Html.CheckBoxFor(model => model.Contract_SendSmsView)
+
+
+                    <div class="slabel" style="width:135px; float: left; margin-right: 10px;">
+                        @Html.LabelFor(model => model.Contract_SendSmsView)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="span5" style="float: right">
+            <div class="form-horizontal" style="">
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.Contract_AlabelView)
+                    </div>
+
+                    @Html.TextBoxFor(model => model.Contract_AlabelView, new { @class = "TextBoxAsLabel", @style = "color:red;" })
+                    @Html.ValidationMessageFor(model => model.Contract_AlabelView)
+
+                </div>
+
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.Contract_CNTDateView)
+                    </div>
+
+                    @Html.EditorFor(model => model.Contract_CNTDateView)
+                    @Html.ValidationMessageFor(model => model.Contract_CNTDateView)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel" style="width: 129px;">
+                        @Html.LabelFor(model => model.Contract_CNTSerialView)
+                    </div>
+
+                    @Html.EditorFor(model => model.Contract_CNTSerialView)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel" style="">
+
+                        @Html.LabelFor(model => model.Contract_CNTCommissionPercentView)
+                    </div>
+
+                    @Html.EditorFor(model => model.Contract_CNTCommissionPercentView)
+                    @Html.ValidationMessageFor(model => model.Contract_CNTCommissionPercentView)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel" style="">
+                        @Html.LabelFor(model => model.Contract_TahvilDateView)
+                    </div>
+
+                    @Html.EditorFor(model => model.Contract_TahvilDateView)
+                    @Html.ValidationMessageFor(model => model.Contract_TahvilDateView)
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row-fluid">
+        <div class="span2" id="lblContractSearchView" style="margin-left: 2.5641%; text-align: center; margin-bottom: 20px;">
+        </div>
+
+    </div>
+    <div class="row-fluid">
+        <table id="ContractDetailGridView"></table>
+    </div>
+
+}
+

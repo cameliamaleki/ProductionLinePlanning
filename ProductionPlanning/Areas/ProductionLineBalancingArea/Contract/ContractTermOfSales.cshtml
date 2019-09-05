@@ -1,0 +1,95 @@
+﻿<script type="text/javascript">
+
+
+    $(function (e) {
+        var SalesRowId=@ViewBag.ContractTermOfSalesRowId;
+        var address = "/TermOfSales/GetTermOfSalesBySaleRow?SalesRowId=" + SalesRowId
+        var dt = $('#ContractTermOfSalesGrid').DataTable({
+            "processing": true,
+            "jQueryUI": false,
+            "scrollCollapse": true,
+            "paging": false,
+            "bAutoWidth": false,
+            "bSort": false,
+            "responsive": (IsMobileDevice) ? true : false,
+
+            "ajax": address,
+            "columns": [
+
+                {
+                    "data": "KM",
+                    "title": "کیلومتر گارانتی",
+                    "width": "150px"
+                },
+
+
+        {
+            "data": "Duration",
+            "title": "مدت گارانتی",
+            "width": "150px"
+        },
+        {
+            "data": "Money",
+            "title": "مبلغ گارانتی",
+            "width": "150px"
+        },
+          {
+              "data": "SaleRowDesc",
+              "title": "شرح ردیف فروش",
+              "width": "150px"
+          }
+
+        ,
+          {
+              "data": "SaleDesc",
+              "title":"شرح دستورالعمل فروش",
+              "width": "150px"
+          },
+          {
+              "data": "SaleFromDate",
+              "title":"تاریخ اعتبار از",
+              "width": "150px"
+          },
+          {
+              "data": "SaleToDate",
+              "title":"تا",
+              "width": "150px"
+          },
+          {
+              "data": "DelFromDate",
+              "title":"تاریخ تحویل از",
+              "width": "150px"
+          },
+          {
+              "data": "DelToDate",
+              "title":"تا",
+              "width": "150px"
+          },
+          {
+              "data": "Discount",
+              "title":"تخفیف",
+              "width": "150px"
+          },
+          {
+              "data": "DiscountPrcnt",
+              "title":"سود مشارکت",
+              "width": "150px"
+          },
+          {
+              "data": "RejectPrcnt",
+              "title":"درصد انصراف",
+              "width": "150px"
+          },
+          {
+              "data": "TahvilDate",
+              "title":"مدت قرارداد",
+              "width": "150px"
+          }]
+        });
+
+    })
+
+
+</script>
+
+<table id="ContractTermOfSalesGrid"></table>

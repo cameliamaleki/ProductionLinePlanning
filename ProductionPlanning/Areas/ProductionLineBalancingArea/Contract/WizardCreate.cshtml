@@ -1,0 +1,331 @@
+﻿@using Core;
+@model Sell.Contract.ContractModel
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        SetLayout();
+
+
+
+
+        $("#btnContractInsurance").prop("disabled", true);
+        $("#btnContractRecipt").prop("disabled", true);
+        $("#btnContractCycle").prop("disabled", true);
+        $("#btnContractOption").prop("disabled", true);
+        $("#btnContractAttach").prop("disabled", true);
+        $("#btnContractTermOfSales").prop("disabled", true);
+        $("#btnContractSolh").prop("disabled", true);
+        $("#btnContractPrintt").prop("disabled", true);
+        $("#btnAddContractDetail").prop("disabled", true);
+        $("#Contract_SendSms").prop("checked", true);
+
+
+        $("#btnContractPrintt").click(function () {
+
+            //  ShowAlert("امکان چاپ قرار داد نیست", 2);
+
+            //  return;
+
+
+            $.post("/Contract/CheckStatus", { CNTID: SelectedContractId }, function (data) {
+                if (data == 1) {
+                    var CntRowId = $('#ContractDetailGrid').DataTable().row($('#ContractDetailGrid tbody tr:first')).data().CNTRowID;
+
+                    var address = "/Contract/Viewerr?Contract_CNTID=" + SelectedContractId + "&ContractRowId=" + CntRowId;
+                    var aa = window.open(address, "a", "height=" + screen.height + ",width=" + screen.width + ",modal=yes,alwaysRaised=yes,menubar=no");
+                }
+
+                else {
+                    ShowAlert("برای قرارداد پرداخت ثبت نشده و امکان چاپ وجود ندارد", 2)
+                }
+            });
+
+
+
+        });
+        $("#frmCreateContract").validate({
+            rules: {
+                Contract_TahvilDate: "required",
+                Contract_CNTDate: "required",
+            },
+            messages: {
+                Contract_TahvilDate: "تاریخ را وارد کنید",
+                Contract_CNTDate: "تاریخ را وارد کنید",
+            },
+            errorPlacement: function (error, element) {
+                error.css({ float: "left" });
+                error.insertBefore(element);
+            }
+        });
+        ClearContractForm();
+
+    });
+
+    $('#Contract_TahvilDate').datepicker({
+        buttonImageOnly: true,
+        dateFormat: 'yy/mm/dd'
+    }).mask("9999/99/99");
+
+    $('#Contract_CNTDate').mask("9999/99/99").attr('readonly', 'readonly');
+    $('#Contract_CNTSerial,#Contract_Alabel').attr('readonly', 'readonly');
+
+
+
+
+</script>
+
+<style>
+    .wcontract {
+        width: 75% !important;
+    }
+
+    .btnAddContractDetail {
+        float: right;
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    .PageNumbersInfo {
+        float: left;
+    }
+
+    .SelectSearchContract {
+        box-shadow: none;
+    }
+
+
+    .EditContractDetail {
+        box-shadow: none;
+    }
+
+    .DeleteContractDetail {
+        box-shadow: none;
+    }
+</style>
+
+
+
+@using (Html.BeginForm("Create", "Contract", FormMethod.Post, new { id = "frmCreateContract", @class = "form-horizontal" }))
+{
+
+
+
+
+
+    @Html.HiddenFor(model => model.Contract_CNTID)
+
+    @Html.HiddenFor(model => model.Contract_Status)
+    @Html.HiddenFor(model => model.Contract_CntStatus)
+    @Html.HiddenFor(model => model.Contract_IsOkbyAccounting)
+    @Html.HiddenFor(model => model.Contract_F_cntTransfer)
+    @Html.HiddenFor(model => model.Contract_F_ParameterID)
+    @Html.HiddenFor(model => model.Contract_FlgOkContract)
+    @Html.HiddenFor(model => model.Contract_TrackID)
+
+
+    @Html.HiddenFor(model => model.Contract_PelakOwner)
+    @Html.HiddenFor(model => model.Contract_RejectionReason)
+    @Html.HiddenFor(model => model.Contract_CNTSerialOld)
+
+    
+    <script type="text/javascript">
+
+
+        $(".Contract_F_AgencyID").change(function (e) {
+            try {
+                $(".Contract_F_CustomerID").chosen("destroy");
+            }
+            catch (e) { }
+            $(".Contract_F_CustomerID").ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '/Contract/searchCustomers',
+                data: { AgentId: $(".Contract_F_AgencyID").val() }
+
+            }, {
+                processItems: function (data) {
+                    console.log(data);
+                    return data.results;
+                },
+                minLength: 2
+            });
+        });
+
+        //if (IsAgent) {
+
+        //    $("#Contract_F_AgencyID").removeClass("chosenajax");
+
+        //    $("#Contract_F_AgencyID").selectpicker();
+
+        //    $("#Contract_F_AgencyID").empty();
+        //    var option = $('<option>').text(AgentName).val(AgentCode);
+
+        //    $("#Contract_F_AgencyID").append($('<option>').text("انتخاب کنید").val("0"));
+        //    $("#Contract_F_AgencyID").append(option);
+
+        //    $("#Contract_F_AgencyID").val(AgentCode);
+
+        //    $("#Contract_F_AgencyID").selectpicker('refresh');
+
+        //    //$(".Contract_F_AgencyID").accordion
+        //} else {
+        $(".Contract_F_AgencyID").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/Contract/searchAgents'
+
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 2
+        });
+        // }
+
+        ClearCombo("Contract_F_AgencyID", true);
+        $(".Contract_F_SponsorID").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/Contract/searchAgents'
+
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 2
+        });
+        $(".Contract_F_AgencyID").trigger("change");
+    </script>
+    <div class="row-fluid" style="float: right; ">
+        <div class="span7" style="float: right;direction:rtl">
+            <div class="form-horizontal" style="">
+                <div class="user-line">
+                    <div class="slabel" style="width:150px">
+                        @Html.LabelFor(model => model.Contract_F_AgencyID)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.Contract_F_AgencyID, new Sell.Agents.Agents().GetAllListCombo(""), new { @class = "Contract_F_AgencyID chosenajax", data_placeHolder = "انتخاب کنید", })
+                    @Html.ValidationMessageFor(model => model.Contract_F_AgencyID)
+                </div>
+
+                <div class="user-line">
+                    <div class="slabel" style="width:150px">
+                        @Html.LabelFor(model => model.Contract_F_CustomerID)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.Contract_F_CustomerID, new Sell.ContractCustomer.ContractCustomer().GetAllListCombo(""), new { @class = " Contract_F_CustomerID chosenajax", data_placeHolder = "انتخاب کنید" })
+
+                    @Html.ValidationMessageFor(model => model.Contract_F_CustomerID)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel" style="width:150px">
+                        @Html.LabelFor(model => model.Contract_F_SponsorID)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.Contract_F_SponsorID, new Sell.ContractCustomer.ContractCustomer().GetAllListCombo(""), new { @class = "wcontract Contract_F_SponsorID", data_placeHolder = "انتخاب کنید", data_width = "550px" })
+                    @Html.ValidationMessageFor(model => model.Contract_F_SponsorID)
+
+                </div>
+                <div class="user-line" style="float:right;margin-right:35px;margin-top:10px">
+                    @Html.CheckBoxFor(model => model.Contract_PublicSale)
+
+
+                    <div class="slabel" style="float:left;margin-right:10px">
+                        @Html.LabelFor(model => model.Contract_PublicSale)
+                    </div>
+                </div>
+                <div class="user-line" style="float:right;margin-top:10px">
+                    @Html.CheckBoxFor(model => model.Contract_SendSms)
+
+
+                    <div class="slabel" style="width:130px; float: left; margin-right: 10px;">
+                        @Html.LabelFor(model => model.Contract_SendSms)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="span5" style="float: right">
+            <div class="form-horizontal" style="">
+
+
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractStatusDesc)
+                    </div>
+
+                    @Html.TextBoxFor(model => model.ContractStatusDesc, new { @class = "TextBoxAsLabel", @style = "color:red;" })
+                    @Html.ValidationMessageFor(model => model.ContractStatusDesc)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.Contract_Alabel)
+                    </div>
+
+                    @Html.TextBoxFor(model => model.Contract_Alabel, new { @class = "TextBoxAsLabel", @style = "color:red;" })
+                    @Html.ValidationMessageFor(model => model.Contract_Alabel)
+
+                </div>
+
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.Contract_CNTDate)
+                    </div>
+
+                    @Html.EditorFor(model => model.Contract_CNTDate)
+                    @Html.ValidationMessageFor(model => model.Contract_CNTDate)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel" style="width: 120px;">
+                        @Html.LabelFor(model => model.Contract_CNTSerial)
+                    </div>
+
+                    @Html.EditorFor(model => model.Contract_CNTSerial)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel" style="">
+
+                        @Html.LabelFor(model => model.Contract_CNTCommissionPercent)
+                    </div>
+
+                    @Html.EditorFor(model => model.Contract_CNTCommissionPercent)
+                    @Html.ValidationMessageFor(model => model.Contract_CNTCommissionPercent)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel" style="">
+                        @Html.LabelFor(model => model.Contract_TahvilDate)
+                    </div>
+
+                    @Html.EditorFor(model => model.Contract_TahvilDate)
+                    @Html.ValidationMessageFor(model => model.Contract_TahvilDate)
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="row-fluid">
+        <div class="span2" id="lblContractSearch" style="margin-left: 2.5641%; text-align: center; margin-bottom: 20px;">
+        </div>
+        @*<div class="span2" style="margin-left: 2.5641%; text-align: center; margin-bottom: 20px;">
+                <input type="button" class=" btn btn-large btn-block btn-primary" id="btnAddContractDetail" style="width: 100px !important;" value="+" />
+            </div>*@
+    </div>
+    <div style="margin-bottom:30px">
+        <table id="ContractDetailGrid"></table>
+    </div>
+
+     
+}
+

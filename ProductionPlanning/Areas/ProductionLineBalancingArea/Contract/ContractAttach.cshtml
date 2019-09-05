@@ -1,0 +1,242 @@
+﻿@model Sell.ContractAttach.ContractAttachModel
+@using Core;
+
+<script type="text/javascript">
+
+
+    $(document).ready(function (e) {
+        if ($("#Contract_CNTID").val() != "" && $("#Contract_CNTID").val() != "0")
+            $.getJSON("/Contract/GetContractHeader", { id: $("#Contract_CNTID").val() }, function (e) {
+                var data = e[0];
+                RefreshCombo("ContractAttachContract", data.Text, data.Value, true);
+                $("#ContractAttachContract").trigger("change");
+            });
+        ContractAttachdt = undefined;
+
+        $("#btnNewContractAttach").prop("disabled", false)
+        $("#btnEditContractAttach").prop("disabled", true)
+        $("#btnRejectContractAttach").prop("disabled", true)
+        $("#btnConfirmAttach").prop("disabled", true)
+        $("#btnCancelAttach").prop("disabled", true)
+        $("#ContractAttach_FileContents").prop("disabled", true)
+        index = 0;
+    })
+    var ContractAttachdt;
+    function LoadContractAttachGrid() {
+
+
+        var address = "/Contract/GetContractAttachment?ContractRowId=" + $("#ContractAttach_F_CntRowId").val();
+
+        index = 0;
+        if (ContractAttachdt == undefined) {
+            ContractAttachdt = $('#ContractAttachGrid').DataTable({
+                "processing": true,
+                "jQueryUI": false,
+                "scrollCollapse": true,
+                "paging": false,
+                "bAutoWidth": false,
+                "bSort": false,
+                "responsive": (IsMobileDevice) ? true : false,
+
+                "ajax": address,
+                "columns": [
+
+                    {
+                        "data": "IDt",
+                        "title": "ردیف",
+                        "width": "150px"
+                    },
+            {
+                "data": "ContractAttach_FileCaption",
+                "title": "نام فایل",
+                "width": "150px"
+            }, {
+                "data": "ContractAttach_FileTypeName",
+                "title": "نوع فایل",
+                "width": "150px"
+            },
+              {
+                  "data": "Selected",
+                  "title": "مشاهده",
+                  "width": "150px"
+              }],
+                "columnDefs": [{
+                    "render": function (data, type, row) {
+                        //row.Mail_Subject
+                        return "<span class='ViewAttachFile btn btn-primary' style='padding-left: 5px; padding-right: 5px; cursor: pointer;' data-id='" + row.ContractAttach_FileId + "'>مشاهده</span>";
+                    },
+                    "targets": 3
+                }]
+                , "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                    $("td:first", nRow).html(iDisplayIndex + 1);
+                    return nRow;
+                }
+
+            });
+
+
+            var detailRows = [];
+
+            $('#ContractAttachGrid tbody').on('click', 'tr', function () {
+                //Select Row
+
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    ContractAttachdt.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    var row = ContractAttachdt.row($(this)).data();
+                    console.log(row);
+                    $("#ContractAttach_FileCaption").val(row.ContractAttach_FileCaption);
+                    $("#ContractAttach_FileType").val(row.ContractAttach_FileType);
+                    $("#ContractAttach_FileType").selectpicker('refresh');
+                    $("#ContractAttach_FileId").val(row.ContractAttach_FileId)
+
+
+                    $("#btnNewContractAttach").prop("disabled", false)
+                    $("#btnEditContractAttach").prop("disabled", false)
+                    $("#btnRejectContractAttach").prop("disabled", false)
+                    $("#btnConfirmAttach").prop("disabled", true)
+                    $("#btnCancelAttach").prop("disabled", true)
+                    $("#ContractAttach_FileContents").prop("disabled", true)
+                }
+            });
+        }
+        else {
+            ContractAttachdt.ajax.url(address).load(function () {
+                HideLoading();
+            });
+        }
+
+    }
+
+    $(document).on("submit", "#frmCreateContractAttach", function (e) {
+        //ContractAttachSelectedFile
+    });
+
+
+    $(document).on("change", "#ContractAttach_F_CntRowId", function (e) {
+        LoadContractAttachGrid();
+    });
+
+
+    $(function (e) {
+
+        $("#ContractAttachContract").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/Contract/searchContractlist',
+            data: {}
+
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 2
+        });
+        SetLayout();
+    })
+
+
+
+
+</script>
+
+
+<style>
+    .ww {
+        width: 350px;
+    }
+</style>
+@using (Html.BeginForm("ContractAttach", "Contract", FormMethod.Post, new { id = "frmCreateContractAttach", @class = "form-horizontal" }))
+{
+
+    @Html.HiddenFor(model => model.ContractAttach_FileId)
+
+
+
+
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span10" style="float: right;direction:rtl">
+            <div class="form-horizontal" style="">
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.Label("قرارداد")
+                    </div>
+
+                    @Html.DropDownList("ContractAttachContract", new Sell.Agents.Agents().GetAllList(0).ToComboBoxListItem(model => model.Agent_SmSName, model => model.Agent_AGNID, true, ""), new { @class = "input-xlarge", data_placeHolder = "انتخاب کنید", data_width = "250px" })
+
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractAttach_FileType)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.ContractAttach_FileType, new Sell.ContractAttach.ContractAttach().GetFileTypes().ToComboBoxListItem(model => model.Text, model => model.Value, true, ""), new { @class = "input-xxlarge chosen", data_placeHolder = "انتخاب کنید", data_width = "390px" })
+                    @Html.ValidationMessageFor(model => model.ContractAttach_FileType)
+
+                </div>
+
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractAttach_F_CntRowId)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.ContractAttach_F_CntRowId, new List<System.Web.Mvc.SelectListItem>(), new { @class = "chosen", data_width = "" })
+                    @Html.ValidationMessageFor(model => model.ContractAttach_F_CntRowId)
+
+                </div>
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractAttach_FileCaption)
+                    </div>
+
+                    @Html.EditorFor(model => model.ContractAttach_FileCaption)
+                    @Html.ValidationMessageFor(model => model.ContractAttach_FileCaption)
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <table id="ContractAttachGrid"></table>
+
+
+
+    <div class="form-row">
+        <div class="column">
+            <div class="slabel">
+                @Html.LabelFor(model => model.ContractAttach_FileContent)
+            </div>
+            <div class="field">
+                <div style="direction:rtl;"> <span style="direction:rtl;"> ((کاربر گرامی، حداکثر حجم فایل انتخابی 300KB میتواند باشد))</span></div>
+                <input type="file" id="ContractAttach_FileContents" accept="image/*" />
+
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid" style="">
+        <div class="span2" id="span2" style="float: right; margin-right: 5.564%; text-align: center; margin-left: 2.76243%;">
+            <input type="button" class=" btn btn-large btn-block btn-primary" id="btnNewContractAttach" value="جدید" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-warning" id="btnEditContractAttach" value="ویرایش" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-warning" id="btnRejectContractAttach" value="حذف" />
+            <div style="display:none;float:right;" id="ContractAttachDeleteDialog">مایل به حذف پیوست هستید ؟</div>
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-success" id="btnConfirmAttach" value="تایید" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-danger" id="btnCancelAttach" value="انصراف" />
+        </div>
+    </div>
+
+}

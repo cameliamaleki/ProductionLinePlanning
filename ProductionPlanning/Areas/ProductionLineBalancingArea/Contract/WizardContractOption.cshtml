@@ -1,0 +1,132 @@
+﻿<script type="text/javascript">
+
+
+    var address = "";
+    if ($("#Contract_CNTID").val() != "0") {
+
+        var CntRowID = $('#ContractDetailGrid').DataTable().row($('#ContractDetailGrid tbody tr:first')).data().CNTRowID;
+        address = "/Contract/GetContractOption?CarTypeID=" + CarId + "&SelectedContractDetailId=" + CntRowID
+    }
+    else {
+
+        address = "/Contract/GetContractOption?CarTypeID=" + CarId + "&SelectedContractDetailId=0";
+    }
+    $(function () {
+
+        var dt = $('#CotractOption').DataTable({
+            "processing": true,
+            "jQueryUI": false,
+            "scrollCollapse": true,
+            "paging": false,
+            "bAutoWidth": false,
+            "bSort": false,
+            "responsive": (IsMobileDevice) ? true : false,
+
+            "ajax": address,
+            "columns": [
+
+                {
+                    "data": "IDt",
+                    "title": "ردیف",
+                    "width": "150px"
+                },
+        {
+            "data": "IsFree",
+            "title": "رایگان",
+            "width": "150px"
+        },
+                    {
+                        "data": "IsSelected",
+                        "title": "انتخاب",
+                        "width": "150px"
+                    },
+        {
+            "data": "OptionPrice",
+            "title": "قیمت",
+            "width": "150px",
+            "render": function (data, type, row, meta) {
+                var num = $.fn.dataTable.render.number(',', '.', 0, "").display(data);
+                return num + "ریال"
+            },
+            "className": "text-right"
+        },
+                    {
+                        "data": "pt_desc",
+                        "title": "شرح",
+                        "width": "150px"
+                    },
+        {
+            "data": "StandardDes",
+            "title": "آپشن استاندارد",
+            "width": "150px"
+        }, ],
+            "columnDefs": [
+                 {
+                     "render": function (data, type, row) {
+                         //row.Mail_Subject
+                         console.log(row);
+                         console.log("aaa");
+                         if (row.IsFree == true) {
+                             return "<input type='checkbox' data-value='' checked disabled />";
+                         }
+                         else {
+                             return "<input type='checkbox' data-value='' disabled  />";
+                         }
+                     },
+                     "targets": 1
+                 },
+
+             {
+                 "render": function (data, type, row) {
+                     //console.log("render 5");
+                     //var SubjectSubstr = "";
+                     //if (row.Mail_Subject.length > 35) {
+                     //    SubjectSubstr = row.Mail_Subject.substr(0, 35) + " ...";
+                     //}
+                     //else
+                     //    SubjectSubstr = row.Mail_Subject;
+
+                     //var str = "<a class='qlabs_tooltip_top qlabs_tooltip_style_3 cursor_pointer'>" + SubjectSubstr + "<span style='text-align:center;min-width:100px'>" + row.Mail_Subject + "</span></a>";
+
+                     //return str;
+                     return "<input type='checkbox' data-value='' />";
+                 },
+                 "targets": 2
+             }],
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                $("td:first", nRow).html(iDisplayIndex + 1);
+                return nRow;
+            },
+            "createdRow": function (row, data, index) {
+                console.log(data);
+                //if (data.isRead == false) {
+                //    $('td', row).addClass('highlight');
+                //}
+                //else {
+                //    $('td', row).addClass('readed');
+                //}
+
+            }
+
+        });
+
+
+        var detailRows = [];
+
+        $('#CotractOption tbody').on('click', 'tr', function () {
+            //Select Row
+
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+                dt.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                var row = dt.row($(this));
+            }
+        });
+    });
+</script>
+<table id="CotractOption"></table>
+
+ 

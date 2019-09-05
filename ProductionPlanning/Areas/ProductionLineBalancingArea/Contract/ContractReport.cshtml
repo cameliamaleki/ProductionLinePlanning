@@ -1,0 +1,171 @@
+﻿@using Core
+@model Sell.Contract.ContractReport
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+
+
+        $("#btnsaleflowreport").click(function () {
+
+
+            var address = "/Contract/Viewer?CR_ContractNoFrom=" + $("#CR_ContractNoFrom").val() + "&CR_ContractNoTo=" + $("#CR_ContractNoTo").val() + "&CR_ContractDateFrom=" + $("#CR_ContractDateFrom").val() + "&CR_ContractDateTo=" + $("#CR_ContractDateTo").val() + "&CR_Customer=" + $("#CR_Customer").val();
+            var aa = window.open(address, "a", "height=600,width=800,modal=yes,alwaysRaised=yes,menubar=no");
+
+        });
+    });
+
+    $(document).ready(function (e) {
+        // SetLayout();
+
+        var ContracrId=@ViewBag.SelectedContractId;
+
+
+
+        $("#CR_ContractNoTo").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/Contract/searchContractlist',
+            data: {}
+
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 2
+        });
+        $("#CR_ContractNoFrom").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/Contract/searchContractlist',
+            data: {}
+
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 2
+        });
+
+
+        if(SelectedContractId!=0){
+            $.getJSON("/Contract/GetContractHeader/" + ContracrId, {}, function (data) {
+
+
+                var Record = data[0];
+               
+                RefreshCombo("CR_ContractNoFrom", Record.Text, Record.Value, true);
+                RefreshCombo("CR_ContractNoTo", Record.Text, Record.Value, true);
+
+                
+            });
+        }
+
+
+        $("#CR_Customer").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/Contract/searchCustomers',
+            data: {}
+
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 2
+        });
+        $('#CR_ContractDateFrom , #CR_ContractDateTo').datepicker({
+            
+            buttonImageOnly: true,
+            dateFormat: 'yy/mm/dd'
+        }).mask("9999/99/99");
+    });
+</script>
+<style>
+    .ww {
+        min-width: 320px;
+    }
+</style>
+
+@using (Html.BeginForm("ContractReport", "Contract", FormMethod.Post, new { id = "frmContractreport", @class = "form-horizontal" }))
+{
+
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span10" style="float: right">
+            <div class="form-horizontal">
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.CR_ContractNoFrom)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.CR_ContractNoFrom, new Sell.ContractCustomer.ContractCustomer().GetAllList(0).ToComboBoxListItem(model => model.CMName, model => model.CMID, true, ""), new { @class = "span6 chosen ", data_placeHolder = "انتخاب کنید" })
+                    @Html.ValidationMessageFor(model => model.CR_ContractNoFrom)
+                </div>
+
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.CR_ContractNoTo)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.CR_ContractNoTo, new Sell.ContractCustomer.ContractCustomer().GetAllList(0).ToComboBoxListItem(model => model.CMName, model => model.CMID, true, ""), new { @class = "span6 chosen ", data_placeHolder = "انتخاب کنید" })
+                    @Html.ValidationMessageFor(model => model.CR_ContractNoTo)
+                </div>
+
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.CR_ContractDateFrom)
+                    </div>
+
+                    @Html.EditorFor(model => model.CR_ContractDateFrom, new { @class = "span6 " })
+                    @Html.ValidationMessageFor(model => model.CR_ContractDateFrom)
+                </div>
+
+
+
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.CR_ContractDateTo)
+                    </div>
+
+                    @Html.EditorFor(model => model.CR_ContractDateTo)
+                    @Html.ValidationMessageFor(model => model.CR_ContractDateTo)
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span10" style="float: right">
+            <div class="form-horizontal">
+                <div class="user-line">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.CR_Customer)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.CR_Customer, new Sell.ContractCustomer.ContractCustomer().GetAllListCombo(""), new { @class = "span6 ww", data_placeHolder = "انتخاب کنید" })
+                    @Html.ValidationMessageFor(model => model.CR_Customer)
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid" style="">
+        <div class="span2" id="span2" style="float: right;
+margin-right: 5.564%;
+text-align: center;
+margin-top: 20px;margin-bottom: 20px;margin-left: 2.76243%;">
+            @* @Html.ActionLink("چاپ","Viewer", null, new { @class="btn btn-large btn-block btn-info" })*@
+
+            <input type="button" class=" btn btn-large btn-block btn-info" id="btnsaleflowreport" value="چاپ" />
+        </div>
+    </div>
+
+}
+

@@ -1,0 +1,510 @@
+﻿@using Core;
+@model Sell.Contract.ContractDetailModel
+<style>
+    .bootstrap-select {
+        float: right !important;
+    }
+
+    .chosen-container {
+        float: right;
+    }
+</style>
+
+<script type="text/javascript">
+
+
+    //Form_ContractDetail_AssignAble
+    //Form_ContractDetail_ShomarehGozari)
+    //Form_ContractDetail_SayerHazSh
+    function SetContractDetailValidators() {
+
+        $("#frmCreateContractDetailItem").validate({
+            rules: {
+                ContractDetail_CNTQuantity: "required",
+            },
+            messages: {
+                ContractDetail_CNTQuantity: "تعداد را وارد کنید"
+            },
+            errorPlacement: function (error, element) {
+                error.css({ float: "left" });
+                error.insertBefore(element);
+            }
+        });
+
+    }
+
+
+    $(document).ready(function (e) {
+        SetLayout();
+        var IsEditPercent = @Html.Raw(new Sell.Contract.Contract().CheckEditSaleRowPercent().ToString().ToLower()+";")
+        if(IsEditPercent)
+        $("#ContractDetail_CNTPercent").prop("disabled",false);
+    else
+            $("#ContractDetail_CNTPercent").prop("disabled",true);
+
+
+        $("#ContractDetail_CNTPercent").number(true,0);
+        // $("#ContractPayment_Money").number(true,0);
+
+        SetContractDetailValidators();
+        $("#ContractDetail_F_SaleRowID").selectpicker();
+        $("#ContractDetailProductType").selectpicker();
+        $("#ContractDetailProductGroup").selectpicker();
+        $("#ContractDetailProductUsage").selectpicker();
+        $("#ContractDetail_CNTPercent").val("0");
+        if ($("#ContractDetail_CNTRowID").val() != "" && $("#ContractDetail_CNTRowID").val() != "0") {
+            $.getJSON("/Contract/ContractDetailFillCombos?SelectedContractDetailId=" + $("#ContractDetail_CNTRowID").val(), {}, function (data) {
+                console.log(data);
+
+                var option;
+                RefreshCombo("ContractDetailProductGroup", data.ProductGroup, data.ProductGroupId, false);
+
+                var address = "/Contract/GetContractDetailProductType?GroupId=" + $("#ContractDetailProductGroup").val();
+                LoadComboBox(address, "ContractDetailProductType", false, function () {
+
+
+                    $("#ContractDetailProductType").val(data.ProductTypeId);
+                    $("#ContractDetailProductType").selectpicker('refresh');
+                });
+
+
+                RefreshCombo("ContractDetail_F_UsageType", data.ProductUsage, data.ProductUsageId, false);
+                RefreshCombo("ContractDetail_F_SaleRowID", data.SalesRow, data.SalesRowId, false);
+                RefreshCombo("ContractDetail_F_DecorationID", data.Decoration, data.DecorationId, false);
+                RefreshCombo("ContractDetail_F_ColorID", data.Color, data.ColorId, false);
+                RefreshCombo("ContractDetail_F_DeliveryAddressID", data.DeliveryAddress, data.DeliveryAddressId, true);
+
+
+
+                $("#ContractDetail_AssignAble").val(data.AssignAble);
+                $("#ContractDetail_ShomarehGozari").val(data.ShomarehGozari);
+                $("#ContractDetail_SayerHazSh").val(data.SayerHazSh);
+
+                if ($("#ContractDetail_AssignAble").val() == "1")
+                    $("#Form_ContractDetail_AssignAble").prop("checked", true);
+                else
+                    $("#Form_ContractDetail_AssignAble").prop("checked", false);
+
+                if ($("#ContractDetail_ShomarehGozari").val() == "1")
+                    $("#Form_ContractDetail_ShomarehGozari").prop("checked", true);
+                else
+                    $("#Form_ContractDetail_ShomarehGozari").prop("checked", false);
+
+                if ($("#ContractDetail_SayerHazSh").val() == "true")
+                    $("#Form_ContractDetail_SayerHazSh").prop("checked", true);
+                else
+                    $("#Form_ContractDetail_SayerHazSh").prop("checked", false);
+
+                $("#ContractDetail_CNTQuantity").val(data.ContractDetail_CNTQuantity);
+                $("#ContractDetail_CNTPercent").val(data.ContractDetail_CNTPercent);
+            });
+
+        }
+        else if (IsContractDetailItemEdit == 1) {
+            IsContractDetailItemEdit = 0;
+            var Item = SelectedContractDetailItems[0];
+            // Item.ContractDetail_CNTPercent = 0;
+            Item.ContractDetail_SayerHazSh = false;
+            $.getJSON("/Contract/ContractDetailFillCombosNotSaved", { DetailItem: JSON.stringify(Item) }, function (data) {
+                console.log(data);
+
+                var option;
+                RefreshCombo("ContractDetailProductGroup", data.ProductGroup, data.ProductGroupId, false);
+
+
+                var address = "/Contract/GetContractDetailProductType?GroupId=" + $("#ContractDetailProductGroup").val();
+                LoadComboBox(address, "ContractDetailProductType", false, function () {
+
+
+                    $("#ContractDetailProductType").val(data.ProductTypeId);
+                    $("#ContractDetailProductType").selectpicker('refresh');
+                });
+
+                RefreshCombo("ContractDetail_F_UsageType", data.ProductUsage, data.ProductUsageId, false);
+                RefreshCombo("ContractDetail_F_SaleRowID", data.SalesRow, data.SalesRowId, false);
+                RefreshCombo("ContractDetail_F_DecorationID", data.Decoration, data.DecorationId, false);
+                RefreshCombo("ContractDetail_F_ColorID", data.Color, data.ColorId, false);
+                RefreshCombo("ContractDetail_F_DeliveryAddressID", data.DeliveryAddress, data.DeliveryAddressId, true);
+
+                $("#PlackOwnerText").val($('#ContractDetailGrid').DataTable().row($('#ContractDetailGrid tbody tr:first')).data().PelakOwner);
+
+                $("#ContractDetail_AssignAble").val(data.AssignAble);
+                $("#ContractDetail_ShomarehGozari").val(data.ShomarehGozari);
+                $("#ContractDetail_SayerHazSh").val(data.SayerHazSh);
+
+                if ($("#ContractDetail_AssignAble").val() == "1")
+                    $("#Form_ContractDetail_AssignAble").prop("checked", true);
+                else
+                    $("#Form_ContractDetail_AssignAble").prop("checked", false);
+
+                if ($("#ContractDetail_ShomarehGozari").val() == "1")
+                    $("#Form_ContractDetail_ShomarehGozari").prop("checked", true);
+                else
+                    $("#Form_ContractDetail_ShomarehGozari").prop("checked", false);
+
+                if ($("#ContractDetail_SayerHazSh").val() == "true")
+                    $("#Form_ContractDetail_SayerHazSh").prop("checked", true);
+                else
+                    $("#Form_ContractDetail_SayerHazSh").prop("checked", false);
+            });
+
+
+
+        }
+        else {
+            ClearCombo("ContractDetail_F_DeliveryAddressID", true);
+        }
+
+
+        if ($('#Contract_PublicSale').is(':checked')) {
+
+            $("#ContractDetail_CNTQuantity").attr('readonly', false);
+        }
+        else {
+            $("#ContractDetail_CNTQuantity").val("1");
+            $("#ContractDetail_CNTQuantity").attr('readonly', true);
+        }
+
+
+
+
+        $("#ContractDetail_F_DeliveryAddressID").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: '/Contract/searchAgents'
+
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 2
+        });
+
+
+    });
+
+    $(document).on("click", "#ContractSelectColor", function () {
+
+
+
+        try {
+            $("#SelectColorPopup").dialog("destroy");
+        }
+        catch (e) { }
+        ShowLoading();
+        //$("#PopupContent").html("<div id='dialog'><div id='PopupDialogData' style='width:100%;margin-top:35%'>" + LoadingImageDialogAddress + "</div></data>");
+        $("#SelectColorPopup").dialog({
+            autoOpen: true,
+            width: 200,
+            height: 200,
+            modal: true,
+            title: "اولویت رنگ",
+            beforeClose: function (event, ui) {
+                $("#SelectColorPopup").html("");
+                HideLoading();
+            }
+
+        });
+        $.get("/Contract/SelectColor", {}, function (data) {
+            $("#SelectColorPopup").html(data);
+
+
+
+        });
+
+
+
+    });
+
+
+</script>
+<style>
+    .cc {
+        min-width: 200px !important;
+    }
+</style>
+
+<div id="SelectColorPopup">
+
+
+</div>
+<div style="min-width:950px;">
+    @using (Html.BeginForm("Create", "Contract", FormMethod.Post, new { id = "frmCreateContractDetailItem", @class = "" }))
+    {
+
+        @Html.Hidden("ContractDetailType")
+
+        <div class="row-fluid" style="float: right;">
+            <div class="span6" style="float: right">
+                <div class="user-title" style="margin-top: 0px; float: right">
+                    ردیف های قرارداد
+                </div>
+                <div class="form-horizontal">
+                    <div class="user-line" style="margin-top: 50px;direction: rtl;">
+                        <div class="slabel" style="float:none">
+
+                            @Html.Label("گروه محصول")
+                        </div>
+
+                        @Html.DropDownList("ContractDetailProductGroup", new Sell.Products.Products().GetProductGroupAll().ToComboBoxListItem(p => p.Name, p => p.Id, false, ""), new { @class = "chosen" })
+
+                    </div>
+                    <div class="user-line" style="direction: rtl;">
+                        <div class="slabel" style="float:none">
+                            @Html.Label("نوع محصول")
+                        </div>
+
+                        @Html.DropDownList("ContractDetailProductType", new List<Sell.Products.ProductsModel>().ToComboBoxListItem(p => p.Name, p => p.Id, false, ""), new { @class = "chosen" })
+
+                    </div>
+                    <div class="user-line" style="direction: rtl;">
+                        <div class="slabel" style="float: none; padding: 0px 29px">
+                            @Html.Label("کاربری")
+                        </div>
+
+                        @Html.DropDownListFor(model => model.ContractDetail_F_UsageType, new List<Sell.Products.ProductsModel>().ToComboBoxListItem(p => p.Name, p => p.Id, false, ""), new { @class = "chosen" })
+
+
+                    </div>
+
+                    <hr />
+                    <div class="user-line" style="direction: rtl;">
+                        <div class="slabel" style="float:none">
+                            @Html.Label("ردیف فروش")
+                        </div>
+                        @Html.DropDownListFor(model => model.ContractDetail_F_SaleRowID, new List<Sell.Products.ProductsModel>().ToComboBoxListItem(p => p.Name, p => p.Id, false, ""), new { @class = "chosen" })
+
+
+                    </div>
+                    <div class="user-line" style="direction: rtl;">
+                        <div class="slabel" style="float: none; padding: 0 40px;">
+                            @Html.LabelFor(model => model.ContractDetail_F_ColorID)
+                        </div>
+
+                        @Html.DropDownListFor(model => model.ContractDetail_F_ColorID, new List<System.Web.Mvc.SelectListItem>(), new { @class = "chosen", style = "width:50px" })<input type="button" class=" btn btn-block btn-primary" id="ContractSelectColor" value="اولویت" style="float:right;    width: 55px;
+    height: 27px;
+    margin-right: 20px;" />
+                        @Html.ValidationMessageFor(model => model.ContractDetail_F_ColorID)
+
+                    </div>
+                    <div class="user-line" style="direction: rtl;">
+                        <div class="slabel" style="float: none; padding: 0 24px;">
+                            @Html.LabelFor(model => model.ContractDetail_F_DecorationID)
+                        </div>
+                        @Html.DropDownListFor(model => model.ContractDetail_F_DecorationID, new Sell.Products.Products().GetProductDecoration().ToComboBoxListItem(p => p.pt_desc, p => p.pyprmtflID, false, ""), new { @class = "chosen" })
+                        @Html.ValidationMessageFor(model => model.ContractDetail_F_DecorationID)
+
+                    </div>
+                    <div class="user-line" style="direction: rtl;">
+                        <div class="slabel" style="float: none; padding: 0 5px;">
+                            @Html.Label("محل تحویل")
+                        </div>
+
+                        @Html.DropDownListFor(model => model.ContractDetail_F_DeliveryAddressID, new Sell.Agents.Agents().GetAllListCombo(""), new { @class = "chosenajax cc" })
+                        @Html.ValidationMessageFor(model => model.ContractDetail_F_DeliveryAddressID)
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="span3" style="float: right;margin:0px">
+                <div class="user-line">
+                    <div class="slabel" style="width: 145px">
+                        @Html.LabelFor(model => model.ContractDetail_AssignAble)
+                    </div>
+                    <div style="direction: rtl">
+                        <input type="checkbox" id="Form_ContractDetail_AssignAble" />
+                        @Html.ValidationMessageFor(model => model.ContractDetail_AssignAble)
+                    </div>
+                </div>
+                <div class="user-title" style="margin-top: 0px; float: right">
+                    فاکتور به نام
+                </div>
+                <div class="form-horizontal" style="">
+                    <div class="user-line" style="margin-top:50px">
+                        <div style="direction: rtl">
+
+                            @Html.RadioButtonFor(model => model.ContractDetail_FactorBy, 1)مشتری اصلی
+                        </div>
+                    </div>
+                    <div class="user-line">
+                        <div style="direction: rtl">
+                            @Html.RadioButtonFor(model => model.ContractDetail_FactorBy, 2)مشتری با واسطه
+                        </div>
+                    </div>
+                    <div class="user-line">
+                        <div style="direction: rtl">
+                            @Html.RadioButtonFor(model => model.ContractDetail_FactorBy, 3)سایر
+                        </div>
+                    </div>
+                    <div class="user-line">
+                        @Html.ValidationMessageFor(model => model.ContractDetail_FactorBy)
+                    </div>
+                    @*<div class="user-line" style="margin-top: 50px">
+                            <div style="direction: rtl">
+                                @Html.RadioButtonFor(model => model.ContractDetail_FactorBy, 1)مشتری اصلی
+                        @Html.RadioButtonFor(model => model.ContractDetail_FactorBy, 2)مشتری با واسطه
+                        @Html.RadioButtonFor(model => model.ContractDetail_FactorBy, 3)سایر
+                        @Html.ValidationMessageFor(model => model.ContractDetail_FactorBy)
+                            </div>
+                        </div>*@
+                </div>
+            </div>
+            <div class="span3" style="float: right">
+                <div class="user-title" style="margin-top: 30px; float: right">
+                    سند به نام
+                </div>
+                <div class="form-horizontal" style="">
+                    <div class="user-line" style="margin-top: 80px">
+                        <div style="direction: rtl">
+
+                            @Html.RadioButtonFor(model => model.ContractDetail_DocumentBy, 1)مشتری اصلی
+                        </div>
+                    </div>
+                    <div class="user-line">
+                        <div style="direction: rtl">
+                            @Html.RadioButtonFor(model => model.ContractDetail_DocumentBy, 2)مشتری با واسطه
+                        </div>
+                    </div>
+                    <div class="user-line">
+                        <div style="direction: rtl">
+                            @Html.RadioButtonFor(model => model.ContractDetail_DocumentBy, 3)سایر
+                        </div>
+                    </div>
+                    <div class="user-line">
+                        @Html.ValidationMessageFor(model => model.ContractDetail_DocumentBy)
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="span3" style="float: right; margin-left: 0;">
+                <div class="form-horizontal" style="">
+                    <div class="user-line">
+
+                        <div class="slabel" style="width: 145px">
+                            @Html.LabelFor(model => model.ContractDetail_ShomarehGozari)
+                        </div>
+                        <div style="direction: rtl">
+                            <input type="checkbox" id="Form_ContractDetail_ShomarehGozari" checked="checked" />
+                            @Html.ValidationMessageFor(model => model.ContractDetail_ShomarehGozari)
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="user-line">
+                    <div class="slabel" style="width: 145px">
+                        @Html.LabelFor(model => model.ContractDetail_SayerHazSh)
+                    </div>
+                    <div style="direction: rtl">
+                        <input type="checkbox" id="Form_ContractDetail_SayerHazSh" checked="checked" />
+                        @Html.ValidationMessageFor(model => model.ContractDetail_SayerHazSh)
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="span3" style="float: right;margin-top: 0px;">
+                <div class="user-title" style="margin-top: 0px; float: right">
+                    حواله
+                </div>
+                <div class="form-horizontal" style="">
+                    <div class="user-line" style="margin-top:50px">
+                        <div style="direction: rtl">
+
+                            @Html.RadioButtonFor(model => model.ContractDetail_HavaleBy, 1)مشتری اصلی
+                        </div>
+                    </div>
+                    <div class="user-line">
+                        <div style="direction: rtl">
+                            @Html.RadioButtonFor(model => model.ContractDetail_HavaleBy, 2)مشتری با واسطه
+                        </div>
+                    </div>
+                    <div class="user-line">
+                        <div style="direction: rtl">
+                            @Html.RadioButtonFor(model => model.ContractDetail_HavaleBy, 3)سایر
+                        </div>
+                    </div>
+                    <div class="user-line">
+                        @Html.ValidationMessageFor(model => model.ContractDetail_HavaleBy)
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        @Html.HiddenFor(model => model.ContractDetail_CNTRowID)
+        @Html.HiddenFor(model => model.ContractDetail_F_CNTID)
+
+        @Html.HiddenFor(model => model.ContractDetail_Tax)
+        @Html.HiddenFor(model => model.ContractDetail_SayerHazSh)
+
+        @Html.HiddenFor(model => model.ContractDetail_taxForIncrease)
+        @Html.HiddenFor(model => model.ContractDetail_FlgAssignCar)
+        @Html.HiddenFor(model => model.ContractDetail_InsOfStatus)
+        @Html.HiddenFor(model => model.ContractDetail_FlgOkLizing)
+        @Html.HiddenFor(model => model.ContractDetail_ReaseonLizing)
+        @Html.HiddenFor(model => model.ContractDetail_CntRowNo)
+        @Html.HiddenFor(model => model.ContractDetail_CNTRowStatus)
+
+        @Html.HiddenFor(model => model.ContractDetail_F_EsghatyID)
+        @Html.HiddenFor(model => model.ContractDetail_AssignAble)
+        @Html.HiddenFor(model => model.ContractDetail_ShomarehGozari)
+
+
+
+
+        @Html.Hidden("ContractDetailtemp_Id")
+
+
+
+        <div class="row-fluid" style="float: right;">
+
+            <div class="span5" style="float: right">
+                <div class="form-horizontal" style="">
+                    <div class="user-line">
+                        <div class="slabel">
+                            @Html.Label("پلاک به نام")
+                        </div>
+
+                        @Html.TextBoxFor(model => model.PlackOwnerText, new { @style = "width:210px;" })
+                        @Html.ValidationMessageFor(model => model.PlackOwnerText)
+
+                    </div>
+                </div>
+            </div>
+            <div class="span5" style="float: right">
+                <div class="form-horizontal" style="direction: rtl;">
+                    <div class="user-line">
+                        <div class="slabel">
+                            @Html.LabelFor(model => model.ContractDetail_CNTQuantity)
+                        </div>
+
+                        @Html.EditorFor(model => model.ContractDetail_CNTQuantity)
+                        @Html.ValidationMessageFor(model => model.ContractDetail_CNTQuantity)
+
+                    </div>
+                    <div class="user-line">
+                        <div class="slabel">
+                            @Html.LabelFor(model => model.ContractDetail_CNTPercent)
+                        </div>
+
+                        @Html.TextBoxFor(model => model.ContractDetail_CNTPercent)
+                        @Html.ValidationMessageFor(model => model.ContractDetail_CNTPercent)
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    }
+
+</div>

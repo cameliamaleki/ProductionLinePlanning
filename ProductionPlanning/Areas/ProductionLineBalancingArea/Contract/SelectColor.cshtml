@@ -1,0 +1,81 @@
+﻿
+<script type="text/javascript">
+    $(function () {
+        var SalesRowID = $("#ContractDetail_F_SaleRowID").val();
+        var ContractId = SelectedContractId;
+
+        //var SendToOrReplyType=@ViewBag.SendToOrReplyType
+        var SendToOrReplyType = 1;
+        var table = $('#ContractColors').DataTable({
+            "processing": true,
+            "jQueryUI": false,
+            //"scrollX": true,
+            "scrollY": "250px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "ajax": "/Contract/GetContractColor?SalesRowID=" + SalesRowID + "&ContractId=" + ContractId,
+            "aoColumns": [
+            {
+                "class": "",
+                "data": "Selected",
+                "title": "",
+
+            }, {
+                "class": "",
+                "data": "pt_desc",
+                "title": "",
+
+            }], "columnDefs": [
+            {
+                "render": function (data, type, row) {
+                    //row.Mail_Subject
+                    if (row.Selected == 0)
+                        return "<input type='checkbox' class='SelectedColors' data-value='" + row.F_ColorID + "' data-text='" + row.pt_desc + "' />";
+                    else
+                        return "<input type='checkbox' class='SelectedColors' data-value='" + row.F_ColorID + "' data-text='" + row.pt_desc + "' checked='true' />";
+                },
+                "targets": 0,
+            }]
+        });
+
+
+
+
+    });
+</script>
+
+
+
+<table id="ContractColors"></table>
+
+<input type="button" class=" btn  btn-primary" value="+" id="SelectColorUp" />
+<input type="button" class=" btn  btn-danger" value="-" id="SelectColorDown" />
+
+<input type="button" class=" btn  btn-info" value="انتخاب" id="SelectColorConfirm" />
+
+<script type="text/javascript">
+    $("#SelectColorConfirm").click(function (e) {
+        var finded = false;
+        var ID = "";
+        var Text = "";
+        $('input:checkbox.SelectedColors').each(function () {
+            if (this.checked) {
+                finded = true;
+                ID = $(this).attr("data-value");
+                Text = $(this).attr("data-text");
+            }
+        });
+        if (finded) {
+            $("#SelectColorPopup").html("");
+            $("#SelectColorPopup").dialog("destroy");
+            RefreshCombo("ContractDetail_F_ColorID", Text, ID, false)
+        }
+        else {
+            ShowAlert("ابتدا رنگ را انتخاب کنید", 2);
+
+        }
+    });
+</script>
