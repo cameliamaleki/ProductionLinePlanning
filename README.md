@@ -11,4 +11,4 @@ Paths to main files:
 Models:  ProductionLinePlanning/ProductionLineBalancing/Models
 Controllers: ProductionLinePlanning/ProductionPlanning/Areas/ProductionLineBalancingArea/ Controllers
 Views: ProductionLinePlanning/ProductionPlanning/Areas/ProductionLineBalancingArea/ Views
-JavaScript Files: ProductionLinePlanning/ProductionPlanning/Scripts/ProductionLineBalancing
+JavaScript Files: ProductionLinePlanning/ProductionPlanning/Scripts/ProductionLineBalancin g
