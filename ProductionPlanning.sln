@@ -1,0 +1,94 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionPlanning", "ProductionPlanning\ProductionPlanning.csproj", "{20C29E1B-2818-4DC7-BCFB-6134F8F47EEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\DataLayer.csproj", "{5D08934B-46DA-43CD-857B-631DB3A54E92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionPlanningStaticData", "ProductionPlanningStaticData\ProductionPlanningStaticData.csproj", "{C11AD50F-D77C-46CD-B10D-F88385D3413A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionPlanningCore", "ProductionPlanningCore\ProductionPlanningCore.csproj", "{67C9F8E3-8C22-4157-90E9-5D64337CCCCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionPlanningSecurity", "ProductionPlanningSecurity\ProductionPlanningSecurity.csproj", "{2E97DC9D-FEBC-45B8-A4C5-7F3113F2EB12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionLineBalancing", "ProductionLineBalancing\ProductionLineBalancing.csproj", "{5FDC2821-E6CC-4142-83A9-9FFCC9E9812D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "General", "General\General.csproj", "{8036FFA1-8F99-4AAC-B216-AFF6DBD07B88}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{20C29E1B-2818-4DC7-BCFB-6134F8F47EEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20C29E1B-2818-4DC7-BCFB-6134F8F47EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20C29E1B-2818-4DC7-BCFB-6134F8F47EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20C29E1B-2818-4DC7-BCFB-6134F8F47EEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D08934B-46DA-43CD-857B-631DB3A54E92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D08934B-46DA-43CD-857B-631DB3A54E92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D08934B-46DA-43CD-857B-631DB3A54E92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D08934B-46DA-43CD-857B-631DB3A54E92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C11AD50F-D77C-46CD-B10D-F88385D3413A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C11AD50F-D77C-46CD-B10D-F88385D3413A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C11AD50F-D77C-46CD-B10D-F88385D3413A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C11AD50F-D77C-46CD-B10D-F88385D3413A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67C9F8E3-8C22-4157-90E9-5D64337CCCCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67C9F8E3-8C22-4157-90E9-5D64337CCCCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67C9F8E3-8C22-4157-90E9-5D64337CCCCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67C9F8E3-8C22-4157-90E9-5D64337CCCCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E97DC9D-FEBC-45B8-A4C5-7F3113F2EB12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E97DC9D-FEBC-45B8-A4C5-7F3113F2EB12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E97DC9D-FEBC-45B8-A4C5-7F3113F2EB12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E97DC9D-FEBC-45B8-A4C5-7F3113F2EB12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FDC2821-E6CC-4142-83A9-9FFCC9E9812D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FDC2821-E6CC-4142-83A9-9FFCC9E9812D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FDC2821-E6CC-4142-83A9-9FFCC9E9812D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FDC2821-E6CC-4142-83A9-9FFCC9E9812D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8036FFA1-8F99-4AAC-B216-AFF6DBD07B88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8036FFA1-8F99-4AAC-B216-AFF6DBD07B88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8036FFA1-8F99-4AAC-B216-AFF6DBD07B88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8036FFA1-8F99-4AAC-B216-AFF6DBD07B88}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 11
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://212.16.70.18:8080/tfs/medical
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = CRM.Tests\\CRM.Tests.csproj
+		SccProjectName1 = CRM.Tests
+		SccLocalPath1 = CRM.Tests
+		SccProjectUniqueName2 = CRM\\CRM.csproj
+		SccProjectName2 = CRM
+		SccLocalPath2 = CRM
+		SccProjectUniqueName3 = CRMCore\\CRMCore.csproj
+		SccProjectName3 = CRMCore
+		SccLocalPath3 = CRMCore
+		SccProjectUniqueName4 = CRMModels\\CRMModels.csproj
+		SccProjectName4 = CRMModels
+		SccLocalPath4 = CRMModels
+		SccProjectUniqueName5 = CRMSecurity\\CRMSecurity.csproj
+		SccProjectName5 = CRMSecurity
+		SccLocalPath5 = CRMSecurity
+		SccProjectUniqueName6 = CRMStaticData\\CRMStaticData.csproj
+		SccProjectName6 = CRMStaticData
+		SccLocalPath6 = CRMStaticData
+		SccProjectUniqueName7 = DataLayer\\DataLayer.csproj
+		SccProjectName7 = DataLayer
+		SccLocalPath7 = DataLayer
+		SccProjectUniqueName8 = General\\General.csproj
+		SccProjectName8 = General
+		SccLocalPath8 = General
+		SccProjectUniqueName9 = ProductionLineBalancing\\ProductionLineBalancing.csproj
+		SccProjectName9 = ProductionLineBalancing
+		SccLocalPath9 = ProductionLineBalancing
+		SccProjectUniqueName10 = RealState\\RealState.csproj
+		SccProjectName10 = RealState
+		SccLocalPath10 = RealState
+	EndGlobalSection
+EndGlobal
