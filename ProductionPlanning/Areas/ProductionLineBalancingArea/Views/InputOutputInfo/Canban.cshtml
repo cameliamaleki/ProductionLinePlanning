@@ -1,0 +1,185 @@
+﻿@model ProductionLineBalancing.Models.InputOutputInfo.CanbanInfoModel
+
+@using CRMCore;
+@{
+    Layout = null;
+}
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+        if (IsConbanEdit) {
+            var row = CanbanInfoDetailGrid.row(PostEditValues);
+            var rowdata = row.data();
+
+
+            $("#Quantity").val(rowdata.Quantity);
+
+            setValueDropDownList("UnitID", rowdata.UnitID);
+            setValueDropDownList("CanbanPartID", rowdata.CanbanPartID);
+            setValueDropDownList("IOTrackingCode", rowdata.IOTrackingCode);
+            setValueDropDownList("IOInventoryCode", rowdata.IOInventoryCode);
+            setValueDropDownList("IOPackageCode", rowdata.IOPackageCode);
+            setValueDropDownList("TechnicalCode", rowdata.CanbanPartID);
+
+            setValueDropDownList("CProcessStageID", rowdata.CProcessStageID);
+
+        }
+
+    });
+    $("#CanbanPartID").change(function (e) {
+        setValueDropDownList("TechnicalCode", $("#CanbanPartID").val());
+    });
+    $("#TechnicalCode").change(function (e) {
+        setValueDropDownList("CanbanPartID", $("#TechnicalCode").val());
+    });
+
+
+</script>
+
+<style>
+    .labelcls
+    {
+        width: 100px !important;
+        font-size: 12px !important;
+        font-family: 'b yekan', Helvetica, Sans-Serif !important;
+        direction: rtl;
+        float: right;
+        margin-right: 0px !important;
+        text-align: right !important;
+    }
+
+    .textboxcls 
+    {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+
+    .m-btmcls
+    {
+        margin-bottom: 5px !important;
+    }
+
+    .btmcls
+    {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="page-header" dir="rtl">
+    <h1>ثبت اطلاعات کانبان <small>ثبت و نمایش جزئیات مربوط به </small></h1>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-external-link-square"></i>
+
+        <div class="panel-tools">
+            <a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
+            <a class="btn btn-xs btn-link panel-config" href="#panel-config" data-toggle="modal">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-refresh" href="#">
+                <i class="fa fa-refresh"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-expand" href="#">
+                <i class="fa fa-resize-full"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-close" href="#">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div style="display: block;" class="panel-body">
+        @using (Html.BeginForm("Create", "CanbansInfo", FormMethod.Post, new { id = "frmCanbanInfo", @class = "form-horizontal" }))
+        {
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+
+                        
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.CanbanPartID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.CanbanPartID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().InputOutputPartCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.TechnicalCode)
+                        </label>
+
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.TechnicalCode, new General.GeneralModels.Combo.Combo().PartInfoTechnicalNumberCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.CProcessStageID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.CProcessStageID, new General.GeneralModels.Combo.Combo().ProcessStageNameCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+
+
+                        @Html.HiddenFor(model => model.CanbanID)
+                        @Html.HiddenFor(model => model.InputOutputID)
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.IOTrackingCode)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.IOTrackingCode, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().CodeCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.IOPackageCode)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.IOPackageCode, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().CodeCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.IOInventoryCode)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.IOInventoryCode, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().CodeCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-12">
+                    <div class="form-group">
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.UnitID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.UnitID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().UnitCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.Quantity)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.EditorFor(model => model.Quantity)
+                            @Html.ValidationMessageFor(model => model.Quantity)
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-2">
+                <button id="btnnewCanbanDetail" class="btn btn-info ladda-button btmcls" type="button" style="margin-right: 100px;">
+                    ثبت                           
+                </button>
+            </div>
+        }
+
+    </div>
+</div>

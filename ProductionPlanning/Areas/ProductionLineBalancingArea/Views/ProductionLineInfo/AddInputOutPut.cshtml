@@ -1,0 +1,509 @@
+﻿@model ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfoModel
+@using CRMCore;
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+
+
+
+
+        var inputaouid = $("#InputOutputID").val();
+        LoadInputOutputInfoGrid();
+        LoadCanbanInfoDetail(inputaouid);
+        LoadWasteCanbanInfoDetail(inputaouid);
+
+        MonthlyAppraisalInfoGrid = undefined;
+        LoadMonthlyAppraisalInfoGrid();
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+
+
+        $("#RegisteredDate").datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+
+        $(".adis").attr("disabled", true);
+        $(".adis").prop("disabled", true);
+
+
+        $("#WastePartID").change(function (e) {
+            $.get("/ProductionLineBalancingArea/ProductionLineInfo/GetAllSuppliers", { MasterID: $(this).val() }, function (dataA) {
+                var i = 0;
+                $("#WasteSupplierID").empty();
+                var optionsbom = '<option value="0">انتخاب کنید</option>';
+                var options2bom = '';
+                for (var i = 0; i < dataA.length; i++) {
+                    optionsbom += '<option value="' + dataA[i].SupplierID + '">' + dataA[i].BargeErsal + "-" + dataA[i].BomNum + '</option>';
+                }
+
+                $("#WasteSupplierID").html(optionsbom);
+                $("#WasteSupplierID").trigger("chosen:updated");
+            });
+        })
+
+
+        $("#ActionID").change(function (e) {
+            $.get("/ProductionLineBalancingArea/ProductionLineInfo/GetAllFaultByAction", { MasterID: $(this).val() }, function (dataA) {
+                var i = 0;
+                $("#WasteFaultID").empty();
+                var options = '';
+                var options2 = '';
+                for (var i = 0; i < dataA.length; i++) {
+                    options += '<option value="' + dataA[i].FaultID + '">' + dataA[i].FaultName + '</option>';
+                }
+
+                $("#WasteFaultID").html(options);
+                $("#WasteFaultID").trigger("chosen:updated");
+            });
+        })
+    });
+
+
+    $.get("/ProductionLineBalancingArea/ProductionLineInfo/GetFacilitybySchedule", { schedid: $(".adis").val() }, function (data) {
+        var i = 0;
+        $("#FacilityIDStop").empty();
+        var optionss = '<option value="0">انتخاب کنید</option>';
+        
+        for (var i = 0; i < data.length; i++) {
+            optionss += '<option value="' + data[i].FacilityID + '">' + data[i].FacilityName + '</option>';
+        }
+
+        $("#FacilityIDStop").html(optionss);
+        $("#FacilityIDStop").trigger("chosen:updated");
+    });
+
+
+    $.get("/ProductionLineBalancingArea/ProductionLineInfo/GetFacilitybySchedule", { schedid: $(".adis").val() }, function (data) {
+        var i = 0;
+        $("#FacilityIDz").empty();
+        var options = '';
+        var options2 = '';
+        for (var i = 0; i < data.length; i++) {
+            options += '<option value="' + data[i].FacilityID + '">' + data[i].FacilityName + '</option>';
+        }
+
+        $("#FacilityIDz").html(options);
+        $("#FacilityIDz").trigger("chosen:updated");
+    });
+
+
+    $.get("/ProductionLineBalancingArea/ProductionLineInfo/GetFacilitybySchedule", { schedid: $(".adis").val() }, function (data) {
+        var i = 0;
+        $("#WorkerIDStop").empty();
+        var options = '';
+        var options2 = '';
+        for (var i = 0; i < data.length; i++) {
+            // options = '<option value="' + 0 + '">' + "انتخاب کنید" + '</option>'
+            options += '<option value="' + data[i].WorkerID + '">' + data[i].WorkerName + '</option>';
+        }
+        options = '<option value="' + 0 + '">' + "انتخاب کنید" + '</option>' + options;
+
+
+        $("#WorkerIDStop").html(options);
+        $("#WorkerIDStop").trigger("chosen:updated");
+    });
+
+
+    //$.get("/ProductionLineBalancingArea/ProductionLineInfo/GetFacilitybySchedule", { schedid: $(".adis").val() }, function (data) {
+    //    var i = 0;
+    //    $("#WorkerIDz").empty();
+    //    var options = '<option value="0">انتخاب کنید</option>';
+    //    var options2 = '';
+    //    for (var i = 0; i < data.length; i++) {
+    //        options += '<option value="' + data[i].WorkerID + '">' + data[i].WorkerName + '</option>';
+    //    }
+
+    //    $("#WorkerIDz").html(options);
+    //    $("#WorkerIDz").trigger("chosen:updated");
+    //});
+
+
+    $.get("/ProductionLineBalancingArea/ProductionLineInfo/GetFacilitybySchedule", { schedid: $(".adis").val() }, function (data) {
+        var i = 0;
+        $("#CWorkerID").empty();
+        var options = '<option value="0">انتخاب کنید</option>';
+        var options2 = '';
+        for (var i = 0; i < data.length; i++) {
+            options += '<option value="' + data[i].WorkerID + '">' + data[i].WorkerName + '</option>';
+        }
+
+        $("#CWorkerID").html(options);
+        $("#CWorkerID").trigger("chosen:updated");
+    });
+
+
+    $(document).ready(function (e) {
+
+
+        //$(".chosen").chosen({ width: "100%", minwidth: "25%" });
+
+
+
+
+        $("#PDDate").prop("disabled", true);
+        $("#PDTotalNotOK").prop("disabled", true);
+        $("#PDTotalNotOKMachine").prop("disabled", true);
+        $("#PDTotalOK").prop("disabled", true);
+        $("#PDTotalStop").prop("disabled", true);
+        $("#PDTotalStopFacility").prop("disabled", true);
+        $("#PDTotalWork").prop("disabled", true);
+    });
+
+    $(document).ready(function (e) {
+
+        FacilityStopInfoGridtab = undefined;
+        LoadFacilityStopInfoGridtab();
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+
+        $("#FacilityStopStartTime").timepicker();
+        $("#RegisteredDate ").datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+    });
+
+</script>
+<style>
+    .labelcls {
+        width: 100px !important;
+        font-size: 12px !important;
+        font-family: 'b yekan', Helvetica, Sans-Serif !important;
+        direction: rtl;
+        float: right;
+        margin-right: 0px !important;
+        text-align: right !important;
+    }
+
+    .textboxcls {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+
+    .m-btmcls {
+        margin-bottom: 5px !important;
+    }
+
+    .btmcls {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+</style>
+
+@using (Html.BeginForm("Create", "InputOutputInfo", FormMethod.Post, new { id = "frmInputOutputInfo", @class = "form-horizontal" }))
+{
+    @Html.ValidationSummary(true)
+
+
+    @Html.HiddenFor(model => model.InputOutputID)
+    @Html.HiddenFor(model => model.ScheduleProductionLineID)
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- start: PANLEL TABS -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-reorder"></i>
+                    ثبت ورودی ها وخروجی ها
+                </div>
+                <div class="panel-body">
+
+
+                    <div class="tabbable panel-tabs">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a data-toggle="tab" href="#panel_tab_example1">
+                                    ثبت ورودی و خروجی
+                                </a>
+                            </li>
+                            <li>
+                                <a data-toggle="tab" href="#panel_tab_example2">
+                                    ثبت کانبان
+                                </a>
+                            </li>
+                            @*<li>
+                                <a data-toggle="tab" href="#panel_tab_example3">
+                                    ثبت ضایعات/دوباره کاری/تعمیرات
+                                </a>
+                            </li>*@
+                            <li>
+                                <a data-toggle="tab" href="#panel_tab_example4">
+                                    تبت توقفات
+                                </a>
+                            </li>
+
+                        </ul>
+                        <div class="tab-content">
+                            <div id="panel_tab_example1" class="tab-pane active">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                    <div class="col-md-12">
+
+                                        <div class="form-group">
+                                            
+                                            <label class="col-sm-2 labelcls">
+                                                @Html.LabelFor(model => model.ScheduleProductionLineID)
+                                            </label>
+                                            <div class="col-sm-2">
+                                                @Html.TextBoxFor(model => model.ScheduleProductionLineID, new { @class = "adis" })
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="panel_tab_example2" class="tab-pane">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+
+
+                                            @Html.HiddenFor(model => model.CanbanID)
+
+
+                                            <label class="col-sm-2 labelcls">
+                                                @Html.LabelFor(model => model.CanbanPartID)
+                                            </label>
+                                            <div class="col-sm-5">
+                                                @Html.DropDownListFor(model => model.CanbanPartID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().InputOutputPartCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                                            </div>
+                       
+                                            <label class="col-sm-2 labelcls">
+                                                @Html.LabelFor(model => model.IOInventoryCode)
+                                            </label>
+                                            <div class="col-sm-2">
+                                                @Html.DropDownListFor(model => model.IOInventoryCode, new General.GeneralModels.Combo.Combo().WarehouseCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 labelcls">
+                                                    انتخاب قالب
+                                                </label>
+
+                                                <div class="col-sm-2">
+                                                    @Html.DropDownListFor(model => model.SupplierID, new General.GeneralModels.Combo.Combo().ShipmentInfoCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                                                </div>
+
+                                                <label class="col-sm-2 labelcls">
+                                                  برنامه تولید
+                                                </label>
+                                                <div class="col-sm-2">
+                                                    @Html.TextBoxFor(model => model.IOPackageCode, new { @class = "chvalid4" })  </div>
+
+                                            </div>
+                                        </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            @*<label class="col-sm-2 labelcls">
+                                                    @Html.LabelFor(model => model.UnitID)
+                                                </label>
+                                                <div class="col-sm-2">
+                                                    @Html.DropDownListFor(model => model.UnitID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().UnitCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                                                </div>*@
+                                            <label class="col-sm-2 labelcls">
+                                                @Html.LabelFor(model => model.CWorkerID)
+                                            </label>
+                                            <div class="col-sm-2">
+                                                @Html.DropDownListFor(model => model.CWorkerID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().WastageWorkerCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                                            </div>
+                                            <label class="col-sm-2 labelcls">
+                                                @Html.LabelFor(model => model.Quantity)
+                                            </label>
+                                            <div class="col-sm-2">
+                                                @Html.TextBoxFor(model => model.Quantity, new { @class = "chvalid4" })
+                                                @Html.ValidationMessageFor(model => model.Quantity)
+                                            </div>
+
+                                            <label class="col-sm-2 labelcls">
+                                                @Html.LabelFor(model => model.CProcessStageID)
+                                            </label>
+                                            <div class="col-sm-2">
+                                                @Html.DropDownListFor(model => model.CProcessStageID, new General.GeneralModels.Combo.Combo().ProcessStageNameCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen chvalid4" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-12">
+                                            <div class="form-group">
+
+                                                <label class="col-sm-2 labelcls">
+                                                    @Html.LabelFor(model => model.RegisteredDate)
+                                                </label>
+                                                <div class="col-sm-2">
+                                                    @Html.EditorFor(model => model.RegisteredDate)
+                                                    @Html.ValidationMessageFor(model => model.RegisteredDate)
+                                                </div>
+
+                                                <label class="col-sm-2 labelcls">
+                                                    @Html.LabelFor(model => model.YearID)
+                                                </label>
+                                                <div class="col-sm-2">
+                                                    @Html.EditorFor(model => model.YearID)
+                                                    @Html.ValidationMessageFor(model => model.YearID)
+                                                </div>
+
+                                            </div>
+                                        </div>*@
+                                </div>
+                                <div class="col-md-2">
+                                    <button id="btnnewCanbanDetail" class="btn btn-info ladda-button btmcls" type="button" style="margin-right: 100px;">
+                                        ثبت
+                                    </button>
+                                </div>
+                                <div style="margin-bottom: 30px">
+                                    <table id="CanbanInfoDetailTable" class="table table-striped table-bordered table-hover"></table>
+                                </div>
+
+                            </div>
+                           
+                            <div id="panel_tab_example4" class="tab-pane">
+                                @Html.HiddenFor(model => model.FacilityStopID)
+
+                                <div class="row" id="">
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 labelcls">
+                                                ایستگاه
+                                            </label>
+                                            <div class="col-sm-2">
+                                                @*     @Html.DropDownListFor(model => model.FacilityID, new ProductionLineBalancing.Models.FacilityStopInfo.FacilityStopInfo().FacilityCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen chvalid" })*@
+                                                @Html.DropDownList("FacilityIDStop", new List<SelectListItem>(), new { @class = "chosen" })
+                                            </div>
+
+                                            <label class="col-sm-2 labelcls">
+                                                @Html.LabelFor(model => model.DepartmentID)
+                                            </label>
+                                            <div class="col-sm-2">
+                                                @Html.DropDownListFor(model => model.DepartmentID, new ProductionLineBalancing.Models.WorkersInfo.WorkersInfo().UnitCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen chvalid" })
+                                            </div>
+                                            @*<label class="col-sm-2 labelcls">
+                                                    @Html.LabelFor(model => model.RoutDown)
+                                                </label>
+                                                <div class="col-sm-2">
+                                                    @Html.CheckBoxFor(model => model.RoutDown)
+                                                </div>*@
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+
+                                    <div class="form-group">
+                                        <label class="col-sm-2 labelcls">
+                                            @Html.LabelFor(model => model.StopID)
+                                        </label>
+                                        <div class="col-sm-2">
+                                            @Html.DropDownListFor(model => model.StopID, new ProductionLineBalancing.Models.FacilityStopInfo.FacilityStopInfo().StopCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen chvalid" })
+
+                                        </div>
+                                        <label class="col-sm-2 labelcls">
+                                            @Html.LabelFor(model => model.FacilityStopDuration)
+                                        </label>
+                                        <div class="col-sm-2">
+                                            @Html.TextBoxFor(model => model.FacilityStopDuration, new { @class = "textboxcls chvalid" })
+                                        </div>
+                                        <label class="col-sm-2 labelcls">
+                                            @Html.LabelFor(model => model.FacilityStopStartTime)
+                                        </label>
+                                        <div class="col-sm-2">
+                                            <div class="input-group bootstrap-timepicker timepicker">
+                                                @Html.TextBoxFor(model => model.FacilityStopStartTime, new { @class = "input-group bootstrap-timepicker timepicker", @Style = "width:100%" })
+                                                <span class="input-group-addon add-on"><i class="fa fa-clock-o"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+
+                                    <div class="form-group">
+                                        <label class="col-sm-2 labelcls">
+                                            @Html.LabelFor(model => model.StopReasonID)
+                                        </label>
+                                        <div class="col-sm-2">
+                                            @Html.DropDownListFor(model => model.StopReasonID, new General.GeneralModels.Combo.Combo().StopReasonCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen chvalid" })
+
+                                        </div>
+                                        <label class="col-sm-2 labelcls">
+                                            نام پرسنل
+                                        </label>
+                                        <div class="col-sm-2">
+                                            @*   @Html.DropDownListFor(model => model.WorkerID, new ProductionLineBalancing.Models.FacilityStopInfo.FacilityStopInfo().WorkerCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen chvalid" })*@
+                                            @Html.DropDownList("WorkerIDStop", new List<SelectListItem>(), new { @class = "chosen" })
+
+
+                                        </div>
+                                        <label class="col-sm-2 labelcls">
+                                            @Html.LabelFor(model => model.FacilityStopDesc)
+                                        </label>
+                                        <div class="col-sm-2">
+                                            @Html.TextAreaFor(model => model.FacilityStopDesc, new { @class = "textboxcls " })
+                                        </div>
+
+
+                                    </div>
+                                </div>
+
+
+
+                                <div class="form-group">
+                                    <div class="col-md-2">
+                                        <button id="btnnewFacilityStopDetail" class="btn btn-info ladda-button btmcls" type="button" style="margin-right: 100px;">
+                                            ذخیره
+                                        </button>
+
+                                    </div>
+
+                                </div>
+                                <div style="margin-bottom: 30px">
+                                    <table id="FacilityStopInfoTabletab" class="table table-striped table-bordered table-hover"></table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-2">
+            <button id="btnnewInputOutput" class="btn btn-info ladda-button btmcls" type="button" style="margin-right: 100px;">
+                ذخیره
+            </button>
+
+        </div>
+        @*<div class="col-md-2">
+                <button id="btnSaveNewInputOutput" class="btn btn-warning ladda-button btmcls" type="submit" style="margin-right: 100px;">
+                    جدید
+                </button>
+            </div>*@
+        <div class="col-md-2">
+            <button id="btnCleanInputOutput" class="btn btn-danger ladda-button btmcls" type="button" style="margin-right: 100px;">
+                لغو
+            </button>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 30px">
+        <table id="InputOutputInfoTable" class="table table-striped table-bordered table-hover"></table>
+    </div>
+
+
+
+    @*<div style="margin-bottom: 30px">
+            <table id="MonthlyAppraisalInfoTable" class="table table-striped table-bordered table-hover"></table>
+        </div>*@
+}
+

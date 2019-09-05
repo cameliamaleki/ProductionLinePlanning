@@ -1,0 +1,248 @@
+﻿@model ProductionLineBalancing.Models.InputOutputInfo.WasteCanbanInfoModel
+
+@using CRMCore;
+@{
+    Layout = null;
+}
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+
+        if (IsWasteConbanEdit) {
+            var row = WasteCanbanInfoDetailGrid.row(PostWasteEditValues);
+            var rowdata = row.data();
+            $("#WasteCanbanID").val(rowdata.WasteCanbanID);
+            $("#InputOutputID").val(rowdata.InputOutputID);
+            //$("#IOInventoryCode").val(rowdata.IOInventoryCode);
+
+            $("#WastageQuantity").val(rowdata.WastageQuantity);
+            $("#WasteDesc").val(rowdata.WasteDesc);
+            $("#OvercomeDesc").val(rowdata.OvercomeDesc);
+
+
+            setValueDropDownList("ActionID", rowdata.ActionID);
+            setValueDropDownList("FaultID", rowdata.FaultID);
+            setValueDropDownList("WTrackingCode", rowdata.WTrackingCode);
+            setValueDropDownList("WInventoryCode", rowdata.WInventoryCode);
+            setValueDropDownList("WPackageCode", rowdata.WPackageCode);
+            setValueDropDownList("WastePartID", rowdata.WastePartID);
+            setValueDropDownList("WasteSourceID", rowdata.WasteSourceID);
+            setValueDropDownList("WorkerID", rowdata.WorkerID);
+            setValueDropDownList("FacilityID", rowdata.FacilityID);
+
+            setValueDropDownList("WCProcessStageID", rowdata.WCProcessStageID);
+
+
+        }
+
+        $(document).ready(function (e) {
+
+            $("#FacilityID").ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: "/ProductionLineBalancingArea/ProductionLineInfo/GetAllFacilityByWorkStation?WorkStationID=" + WORKSTATIONNEW,
+                data: {}
+            }, {
+                processItems: function (data) {
+                    console.log(data);
+                    return data.results;
+                },
+                minLength: 1
+            });
+        });
+    });
+
+
+</script>
+
+<style>
+    .labelcls
+    {
+        width: 100px !important;
+        font-size: 12px !important;
+        font-family: 'b yekan', Helvetica, Sans-Serif !important;
+        direction: rtl;
+        float: right;
+        margin-right: 0px !important;
+        text-align: right !important;
+    }
+
+    .textboxcls 
+    {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+
+    .m-btmcls
+    {
+        margin-bottom: 5px !important;
+    }
+
+    .btmcls
+    {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="page-header" dir="rtl">
+    <h1>ثبت اطلاعات ضایعات <small>ثبت و نمایش جزئیات مربوط به </small></h1>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-external-link-square"></i>
+
+        <div class="panel-tools">
+            <a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
+            <a class="btn btn-xs btn-link panel-config" href="#panel-config" data-toggle="modal">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-refresh" href="#">
+                <i class="fa fa-refresh"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-expand" href="#">
+                <i class="fa fa-resize-full"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-close" href="#">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div style="display: block;" class="panel-body">
+        @using (Html.BeginForm("Create", "WasteCanbanInfo", FormMethod.Post, new { id = "frmWasteCanbanInfo", @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+
+                        @Html.HiddenFor(model => model.WasteCanbanID)
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.WastePartID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.WastePartID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().InputOutputPartCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.FacilityID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownList("FacilityID", new List<SelectListItem>(), new { @class = "col-sm-12", data_placeHolder = "انتخاب کنید" })
+                        </div>
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.WorkerID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.WorkerID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().WastageWorkerCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.WasteSourceID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.WasteSourceID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().WasteSourceCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.WTrackingCode)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.WTrackingCode, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().CodeCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.WPackageCode)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.WPackageCode, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().CodeCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.WInventoryCode)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.WInventoryCode, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().CodeCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+<label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.WCProcessStageID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.WCProcessStageID, new General.GeneralModels.Combo.Combo().ProcessStageNameCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+
+                        @Html.HiddenFor(model => model.InputOutputID)
+
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.WastageQuantity)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.EditorFor(model => model.WastageQuantity)
+                            @Html.ValidationMessageFor(model => model.WastageQuantity)
+                        </div>
+                       
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+
+                        
+                         <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.FaultID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.FaultID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().FaultCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+                         <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.WasteDesc)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.TextAreaFor(model => model.WasteDesc)
+                            @Html.ValidationMessageFor(model => model.WasteDesc)
+                        </div>
+                        
+
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+
+
+                       
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.ActionID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.DropDownListFor(model => model.ActionID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().ActionCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.OvercomeDesc)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.TextAreaFor(model => model.OvercomeDesc)
+                            @Html.ValidationMessageFor(model => model.OvercomeDesc)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button id="btnnewWasteCanbanDetail" class="btn btn-info ladda-button btmcls" type="button" style="margin-right: 100px;">
+                    ثبت کانبان
+                </button>
+            </div>
+        }
+
+    </div>
+</div>

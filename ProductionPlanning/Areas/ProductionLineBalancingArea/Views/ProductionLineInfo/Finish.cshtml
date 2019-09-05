@@ -1,0 +1,169 @@
+﻿@*@model ProductionLineBalancing.Models.InputOutputInfo.CanbanInfoModel
+
+@using CRMCore;
+@{
+    Layout = null;
+}
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+
+        //$(".chosen").chosen({ width: "100%", minwidth: "25%" });
+        if (IsConbanEdit) {
+            var row = CanbanInfoDetailGrid.row(PostEditValues);
+            var rowdata = row.data();
+            $("#IOTrackingCode").val(rowdata.IOTrackingCode);
+            $("#IOPackageCode").val(rowdata.IOPackageCode);
+            $("#IOInventoryCode").val(rowdata.IOInventoryCode);
+            $("#PartID").val(rowdata.PartID);
+            $("#TechnicalCode").val(rowdata.TechnicalCode);
+            $("#Quantity").val(rowdata.Quantity);
+            $("#UnitID").val(rowdata.UnitID);
+
+
+        }
+    });
+
+    
+
+</script>
+
+<style>
+    .labelcls {
+        width: 100px !important;
+        font-size: 12px !important;
+        font-family: 'b yekan', Helvetica, Sans-Serif !important;
+        direction: rtl;
+        float: right;
+        margin-right: 0px !important;
+        text-align: right !important;
+    }
+
+    .textboxcls chvalid {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+
+    .m-btmcls {
+        margin-bottom: 5px !important;
+    }
+
+    .btmcls {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="page-header" dir="rtl">
+    <h1>ثبت اطلاعات کانبان <small>ثبت و نمایش جزئیات مربوط به </small></h1>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-external-link-square"></i>
+
+        <div class="panel-tools">
+            <a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
+            <a class="btn btn-xs btn-link panel-config" href="#panel-config" data-toggle="modal">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-refresh" href="#">
+                <i class="fa fa-refresh"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-expand" href="#">
+                <i class="fa fa-resize-full"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-close" href="#">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div style="display: block;" class="panel-body">
+        @using (Html.BeginForm("Create", "CanbansInfo", FormMethod.Post, new { id = "frmCanbanInfo", @class = "form-horizontal" }))
+        {
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+
+                      
+                            @Html.HiddenFor(model => model.CanbanID)
+                           
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.IOTrackingCode)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.EditorFor(model => model.IOTrackingCode)
+                            @Html.ValidationMessageFor(model => model.IOTrackingCode)
+                        </div>
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.IOPackageCode)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.EditorFor(model => model.IOPackageCode)
+                            @Html.ValidationMessageFor(model => model.IOPackageCode)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.IOInventoryCode)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.EditorFor(model => model.IOInventoryCode)
+                            @Html.ValidationMessageFor(model => model.IOInventoryCode)
+                        </div>
+
+                        
+                      
+                            @Html.HiddenFor(model => model.InputOutputID)
+                          
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.CanbanPartID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.EditorFor(model => model.CanbanPartID)
+                            @Html.ValidationMessageFor(model => model.CanbanPartID)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.TechnicalCode)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.EditorFor(model => model.TechnicalCode)
+                            @Html.ValidationMessageFor(model => model.TechnicalCode)
+                        </div>
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.UnitID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.EditorFor(model => model.UnitID)
+                            @Html.ValidationMessageFor(model => model.UnitID)
+                        </div>
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.Quantity)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.EditorFor(model => model.Quantity)
+                            @Html.ValidationMessageFor(model => model.Quantity)
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-2">
+                                <button id="btnnewCanbanDetail" class="btn btn-info ladda-button btmcls" type="button" style="margin-right: 100px;">
+                                    ثبت                            </button>
+                            </div>
+        }
+
+    </div>
+</div>*@

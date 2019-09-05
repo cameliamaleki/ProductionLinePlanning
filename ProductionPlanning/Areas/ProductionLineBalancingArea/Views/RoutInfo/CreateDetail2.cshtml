@@ -1,0 +1,109 @@
+﻿@model ProductionLineBalancing.Models.RoutInfo.RoutChildParentInfoModel
+
+
+@using CRMCore;
+@{
+    Layout = null;
+}
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+        if (IsRoutChildParentEdit) {
+            var row = RoutChildParentInfoGrid.row(RoutChildParentPostEditValues);
+            var rowdata = row.data();
+            $("#RoutID").val(rowdata.RoutID);
+            $("#RoutChildParentID").val(rowdata.RoutChildParentID);
+            
+            setValueDropDownList("ChildRoutID", rowdata.ChildRoutID);
+        }
+    });
+
+    
+
+</script>
+
+<style>
+    .labelcls {
+        width: 100px !important;
+        font-size: 12px !important;
+        font-family: 'b yekan', Helvetica, Sans-Serif !important;
+        direction: rtl;
+        float: right;
+        margin-right: 0px !important;
+        text-align: right !important;
+    }
+
+    .textboxcls  {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+
+    .m-btmcls {
+        margin-bottom: 5px !important;
+    }
+
+    .btmcls {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="page-header" dir="rtl">
+    <h1>ثبت اطلاعات خطوط زیر خط <small> ثبت و نمایش جزئیات مربوط به زیرخط </small></h1>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-external-link-square"></i>
+
+        <div class="panel-tools">
+            <a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
+            <a class="btn btn-xs btn-link panel-config" href="#panel-config" data-toggle="modal">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-refresh" href="#">
+                <i class="fa fa-refresh"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-expand" href="#">
+                <i class="fa fa-resize-full"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-close" href="#">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div style="display: block;" class="panel-body">
+        @using (Html.BeginForm("Create", "RoutChildParentInfo", FormMethod.Post, new { id = "frmRoutChildParentInfo", @class = "form-horizontal" }))
+        {
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+
+                      
+                            @Html.HiddenFor(model => model.RoutChildParentID)
+                           
+
+                        <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.ChildRoutID)
+                        </label>
+                        <div class="col-sm-2">
+                          
+                                @Html.DropDownListFor(model => model.ChildRoutID, new ProductionLineBalancing.Models.RoutInfo.RoutInfo().RoutCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                            
+                            @Html.ValidationMessageFor(model => model.ChildRoutID)
+                        </div>
+
+                        
+                    </div>
+                </div>
+     
+
+            </div>
+            <div class="col-md-2">
+                                <button id="btnnewRoutChildParentDetail" class="btn btn-info ladda-button btmcls" type="button" style="margin-right: 100px;">
+                                    ثبت                            </button>
+                            </div>
+        }
+
+    </div>
+</div>

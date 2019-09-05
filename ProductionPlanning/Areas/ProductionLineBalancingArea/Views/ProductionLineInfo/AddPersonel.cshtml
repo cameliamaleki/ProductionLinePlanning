@@ -1,0 +1,151 @@
+﻿@model ProductionLineBalancing.Models.ProductionLineInfo.WorkersScheduleInfoModel
+@using CRMCore;
+@{
+    Layout = null;
+}
+
+<script>
+    var SchedulePID = $("#ScheduleProductionLineID").val();
+    LoadAddPersonelGrid(hspid);
+
+    $(document).ready(function () {
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+    });
+
+
+    $(document).ready(function (e) {
+
+
+        if (IsPersonelEdit) {
+            var row = AddPersonelGrid.row(PostPErsonelEditValues);
+            var rowdata = row.data();
+            $("#WorkersAssociationID").val(rowdata.WorkersAssociationID);
+            $("#FacilityID").val(rowdata.FacilityID);
+            $("#WorkerID").val(rowdata.WorkerID);
+
+
+        }
+
+
+    });
+
+    $(document).ready(function (e) {
+
+
+
+
+        $.get("/ProductionLineBalancingArea/ProductionLineInfo/GetFacilitybyRout", { schedid: $("#ScheduleProductionLineID2").val() }, function (data) {
+            var i = 0;
+            $("#W_FacilityID").empty();
+            var options = '';
+            var options2 = '';
+            for (var i = 0; i < data.length; i++) {
+                options += '<option value="' + data[i].W_FacilityID + '">' + data[i].FacilityName+'</option>';
+            }
+
+            $("#W_FacilityID").html(options);
+            $("#W_FacilityID").trigger("chosen:updated");
+        });
+
+
+
+
+
+
+
+
+        $("#FacilityIDD").ajaxChosen({
+            dataType: 'json',
+            type: 'POST',
+            url: "/ProductionLineBalancingArea/ProductionLineInfo/GetAllFacilityByWorkStation?WorkStationID=" + WstationID,
+            data: {}
+        }, {
+            processItems: function (data) {
+                console.log(data);
+                return data.results;
+            },
+            minLength: 1
+        });
+    });
+</script>
+
+
+<!-- start: FORM WIZARD PANEL -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-external-link-square"></i>
+
+        <div class="panel-tools">
+            <a class="btn btn-xs btn-link panel-collapse collapses" href="#">
+            </a>
+            <a class="btn btn-xs btn-link panel-config" href="#panel-config" data-toggle="modal">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-refresh" href="#">
+                <i class="fa fa-refresh"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-expand" href="#">
+                <i class="fa fa-resize-full"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-close" href="#">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div class="panel-body">
+
+        @using (Html.BeginForm("Create", "AddPersonelInfo", FormMethod.Post, new { id = "frmAddPersonelInfo", @class = "smart-wizard form-horizontal" }))
+        {
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">
+                            @Html.LabelFor(model => model.W_FacilityID)
+                        </label>
+                        <div class="col-sm-6">
+                          @*  @Html.DropDownListFor(model => model.W_FacilityID, new General.GeneralModels.Combo.Combo().FacilityNameCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })*@
+                            @Html.DropDownList("W_FacilityID", new List<SelectListItem>(), new { @class = "chosen" })
+
+
+
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">
+                            @Html.LabelFor(model => model.W_WorkersID)
+                        </label>
+                        <div class="col-sm-6">
+                            @Html.DropDownListFor(model => model.W_WorkersID, new General.GeneralModels.Combo.Combo().WorkersCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                        </div>
+                    </div>
+
+                    @Html.HiddenFor(model => model.WorkersScheduleID)
+                    @Html.HiddenFor(model => model.ScheduleProductionLineID2)
+
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-2">
+                    <button id="btnnewAddPersonel" class="btn btn-info ladda-button btmcls" type="button" style="margin-right: 100px;">
+                        اضافه
+                    </button>
+
+                </div>
+            </div>
+            <div style="margin-bottom: 30px">
+                <table id="AddPersonelTable" class="table table-striped table-bordered table-hover"></table>
+            </div>
+
+            <div class="col-md-2">
+                <button id="btnSavenewPersonel" class="btn btn-info ladda-button btmcls" type="button" style="margin-right: 100px;">
+                    ذخیره
+                </button>
+
+            </div>
+        }
+    </div>
+</div>

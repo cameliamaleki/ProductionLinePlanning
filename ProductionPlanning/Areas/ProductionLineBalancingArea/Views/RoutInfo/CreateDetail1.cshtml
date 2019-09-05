@@ -1,0 +1,181 @@
+﻿@model ProductionLineBalancing.Models.RoutInfo.RoutFacilityInfoModel
+
+
+@using CRMCore;
+@{
+    Layout = null;
+}
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+        if (IsRoutFacilityEdit) {
+            var row = RoutFacilityInfoGrid.row(RoutFacilityPostEditValues);
+            var rowdata = row.data();
+            $("#RoutFacilityID").val(rowdata.RoutFacilityID);
+            $("#RoutID").val(rowdata.RoutID);
+            $("#FaciltiyID").val(rowdata.FaciltiyID);
+            $("#PartID").val(rowdata.PartID);
+            $("#TimeDurationMin").val(rowdata.TimeDurationMin);
+            setValueDropDownList("FaciltiyID", rowdata.FaciltiyID);
+        }
+
+        $("#PPPAAARRRTTT").val(PARTIDNEW);
+        $("#fff").val(partfac);
+        var Address = "/ProductionLineBalancingArea/RoutInfo/GetAllFacility?WorkStationID=" + WORKSTATIONNEW;
+        //$("#FaciltiyID").ajaxChosen({
+        //    dataType: 'json',
+        //    type: 'POST',
+        //    url: Address,
+        //    data: {}
+        //}, {
+        //    processItems: function (data) {
+        //        console.log(data);
+        //        return data.results;
+        //    },
+        //    minLength: 1
+        //});
+
+        //$.get(Address, {}, function (data) {
+        //    var selectList = $("#FaciltiyID");
+
+        //    $("#FaciltiyID").append($('<option>').text("انتخاب کنید").val("0"));
+        //    var index = 1;
+        //    $.each(data, function (index, optionData) {
+        //        var option = $('<option>').text(optionData).val(index);
+        //        $("#FaciltiyID").append(option);
+        //    });
+        //    var index = 1;
+        //    //for (var val in data) {
+        //    //    var option = $('<option />', { value: index, text: data[index-1] });
+        //    //    $("#FaciltiyID").append(option);
+        //    //    index++;
+        //    //}
+
+        //    $("#FaciltiyID").selectpicker('refresh');
+        //    $("#FaciltiyID").trigger("chosen:updated");
+        //});
+
+    });
+
+    //$(document).ready(function (e) {
+
+    //    $("#FacilityID").ajaxChosen({
+    //        dataType: 'json',
+    //        type: 'POST',
+    //        url: "/ProductionLineBalancingArea/ProductionLineInfo/GetAllFacilityByWorkStation?WorkStationID=" + WORKSTATIONNEW,
+    //        data: {}
+    //    }, {
+    //        processItems: function (data) {
+    //            console.log(data);
+    //            return data.results;
+    //        },
+    //        minLength: 1
+    //    });
+    //});
+
+    
+
+</script>
+
+<style>
+    .labelcls {
+        width: 100px !important;
+        font-size: 12px !important;
+        font-family: 'b yekan', Helvetica, Sans-Serif !important;
+        direction: rtl;
+        float: right;
+        margin-right: 0px !important;
+        text-align: right !important;
+    }
+
+    .textboxcls  {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+
+    .m-btmcls {
+        margin-bottom: 5px !important;
+    }
+
+    .btmcls {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="page-header" dir="rtl">
+    <h1>ثبت اطلاعات مدت زمان ماشین آلات <small> ثبت و نمایش جزئیات مربوط به مدت زمان ماشتی آلات </small></h1>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-external-link-square"></i>
+
+        <div class="panel-tools">
+            <a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
+            <a class="btn btn-xs btn-link panel-config" href="#panel-config" data-toggle="modal">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-refresh" href="#">
+                <i class="fa fa-refresh"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-expand" href="#">
+                <i class="fa fa-resize-full"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-close" href="#">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div style="display: block;" class="panel-body">
+        @using (Html.BeginForm("Create", "RoutFacilityInfo", FormMethod.Post, new { id = "frmRoutFacilityInfo", @class = "form-horizontal" }))
+        {
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+
+                      
+                            @Html.HiddenFor(model => model.RoutFacilityID)
+                           <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.PartID)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.TextBoxFor(model=>model.PartID , new { id = "PPPAAARRRTTT" ,@class = "textboxcls chvalid"})
+                             <div id="fff" style="opacity:0;"></div>
+                           
+                        </div> 
+
+                        <label class="col-sm-2 labelcls">
+                          نام تسهیل
+                        </label>
+                        <div class="col-sm-2">
+                            
+                           @* @Html.DropDownListFor(model => model.FaciltiyID, new List<SelectListItem>(), new { @class = "chosen" })*@
+                           @* @Html.DropDownList("FacilityID", new List<SelectListItem>(), new { @class = "col-sm-12", data_placeHolder = "انتخاب کنید" })*@
+
+
+@Html.DropDownListFor(model => model.FaciltiyID, new General.GeneralModels.Combo.Combo().FacilityNameCombo().ToComboBoxListItem(q=>q.Name,q=>q.Value,false,""),new { @class = "chosen" })
+                        </div>
+
+                       
+                         <label class="col-sm-2 labelcls">
+                            @Html.LabelFor(model => model.TimeDurationMin)
+                        </label>
+                        <div class="col-sm-2">
+                            @Html.EditorFor(model => model.TimeDurationMin)
+                            @Html.ValidationMessageFor(model => model.TimeDurationMin)
+                        </div>
+                    </div>
+                </div>
+            
+
+            </div>
+            <div class="col-md-2">
+                                <button id="btnnewRoutFacilityDetail" class="btn btn-info ladda-button btmcls" type="button" style="margin-right: 100px;">
+                                    ثبت                            </button>
+                            </div>
+        }
+
+    </div>
+</div>

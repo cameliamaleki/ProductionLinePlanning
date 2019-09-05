@@ -1,0 +1,169 @@
+﻿@model ProductionLineBalancing.Models.MonthlyAppraisalInfo.MonthlyAppraisalInfoModel
+
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        MonthlyAppraisalInfoGrid = undefined;
+        LoadMonthlyAppraisalInfoGrid();
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+    });
+
+</script>
+<style>
+    .labelcls {
+        width: 100px !important;
+        font-size: 12px !important;
+        font-family: 'b yekan', Helvetica, Sans-Serif !important;
+        direction: rtl;
+        float: right;
+        margin-right: 0px !important;
+        text-align: right !important;
+    }
+
+    .textboxcls  {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+
+    .m-btmcls {
+        margin-bottom: 5px !important;
+    }
+
+    .btmcls {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="page-header" dir="rtl">
+    <h1>ثبت اطلاعات MonthlyAppraisal <small>ثبت و نمایش جزئیات مربوط به MonthlyAppraisal</small></h1>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-external-link-square"></i>
+
+        <div class="panel-tools">
+            <a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
+            <a class="btn btn-xs btn-link panel-config" href="#panel-config" data-toggle="modal">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-refresh" href="#">
+                <i class="fa fa-refresh"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-expand" href="#">
+                <i class="fa fa-resize-full"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-close" href="#">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div style="display: block;" class="panel-body">
+        @using (Html.BeginForm("Create", "MonthlyAppraisalInfo", FormMethod.Post, new { id = "frmMonthlyAppraisalInfo", @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+
+
+            @Html.HiddenFor(model => model.MonthlyAppraisalID)
+            <form action="#" role="form" id="form">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.UserID)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.UserID, new { @class = "textboxcls chvalid", disabled = true })
+                            </div>
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.RegisteredDate)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.RegisteredDate, new { @class = "textboxcls chvalid", disabled = true })
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col-md-12">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.MonthID)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.MonthID, new { @class = "textboxcls chvalid" })
+                            </div>
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.Appraisal)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.Appraisal, new { @class = "textboxcls chvalid" })
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.WorkingTime)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.WorkingTime, new { @class = "textboxcls chvalid" })
+                            </div>
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.WorkersID)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.WorkersID, new { @class = "textboxcls chvalid" })
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col-md-12">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.TotalFinishedGoods)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.TotalFinishedGoods, new { @class = "textboxcls chvalid" })
+                            </div>
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.TotalConditionalGoods)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.TotalConditionalGoods, new { @class = "textboxcls chvalid" })
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.MonthlyAppraisalDesc)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.MonthlyAppraisalDesc, new { @class = "textboxcls chvalid" })
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <button id="btnnewMonthlyAppraisal" class="btn btn-info ladda-button btmcls" type="submit" style="margin-right: 100px;">
+                            ایجاد
+                        </button>
+                    </div>
+                </div>
+
+
+            </form>
+        }
+        <div style="margin-bottom: 30px">
+            <table id="MonthlyAppraisalInfoTable" class="table table-striped table-bordered table-hover"></table>
+        </div>
+    </div>
+</div>

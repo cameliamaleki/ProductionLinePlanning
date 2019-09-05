@@ -1,0 +1,182 @@
+﻿@model ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfoModel
+@using CRMCore;
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        var inputaouid = $("#InputOutputID").val();
+        LoadInputOutputInfoGrid();
+        LoadCanbanInfoDetail(inputaouid);
+        LoadWasteCanbanInfoDetail(inputaouid);
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+
+        $("#RegisteredDate").datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+    });
+
+</script>
+<style>
+    .labelcls
+    {
+        width: 100px !important;
+        font-size: 12px !important;
+        font-family: 'b yekan', Helvetica, Sans-Serif !important;
+        direction: rtl;
+        float: right;
+        margin-right: 0px !important;
+        text-align: right !important;
+    }
+
+    .textboxcls 
+    {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+
+    .m-btmcls
+    {
+        margin-bottom: 5px !important;
+    }
+
+    .btmcls
+    {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="page-header" dir="rtl">
+    <h1>ثبت اطلاعات InputOutput <small>ثبت و نمایش جزئیات مربوط به InputOutput</small></h1>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-external-link-square"></i>
+
+        <div class="panel-tools">
+            <a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
+            <a class="btn btn-xs btn-link panel-config" href="#panel-config" data-toggle="modal">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-refresh" href="#">
+                <i class="fa fa-refresh"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-expand" href="#">
+                <i class="fa fa-resize-full"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-close" href="#">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div style="display: block;" class="panel-body">
+        @using (Html.BeginForm("Create", "InputOutputInfo", FormMethod.Post, new { id = "frmInputOutputInfo", @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+
+
+            @Html.HiddenFor(model => model.InputOutputID)
+            <form action="#" role="form" id="form">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.UserID)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.UserID, new { @class = "textboxcls chvalid", disabled = true })
+                            </div>
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.RegisteredDate)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.RegisteredDate, new { })
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col-md-12">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.InputOutputCode)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.InputOutputCode, new { @class = "textboxcls chvalid" })
+                            </div>
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.InputOutputIndicator)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.InputOutputIndicator, new { @class = "textboxcls chvalid" })
+                            </div>
+                        
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.ScheduleProductionLineID)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.DropDownListFor(model => model.ScheduleProductionLineID, new ProductionLineBalancing.Models.InputOutputInfo.InputOutputInfo().ScheduleCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen" })
+                            </div>
+
+
+                        </div>
+                        </div>
+                <div class="row ">
+                        <div class="form-group">
+                             
+                            <div class="col-md-2">
+                               
+                                <button id="btnnewInputOutputCanban" class="btn btn-purple ladda-button btmcls btn-block" type="button" style="margin-right: 100px; width:500px;">
+                               <i class="fa fa-plus"> 	&nbsp; </i>
+                                         ثبت تغذیه
+                                </button>
+                            </div>
+
+                            <div class="col-md-2">
+                                <button id="btnnewInputOutputWasteCanban" class="btn btn-purple ladda-button btmcls btn-block" type="button" style="margin-right: 100px;width:500px;">
+                               <i class="fa fa-plus">	&nbsp; </i>
+                                         ثبت ضایعات
+                                </button>
+                            </div>
+                            
+                        </div>
+                            <div style="margin-bottom: 30px">
+            <table id="CanbanInfoDetailTable" class="table table-striped table-bordered table-hover"></table>
+        </div>
+        <div style="margin-bottom: 30px">
+            <table id="WasteCanbanInfoDetailTable" class="table table-striped table-bordered table-hover"></table>
+        </div>
+                    </div>
+                <div class="row ">
+                        <div class="form-group">
+                            <div class="col-md-2">
+                                <button id="btnnewInputOutput" class="btn btn-info ladda-button btmcls" type="submit" style="margin-right: 100px;">
+                                    ذخیره
+                                </button>
+
+                            </div>
+                            <div class="col-md-2">
+                                <button id="btnSaveNewInputOutput" class="btn btn-warning ladda-button btmcls" type="submit" style="margin-right: 100px;">
+                                    جدید
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="btnCleanInputOutput" class="btn btn-danger ladda-button btmcls" type="button" style="margin-right: 100px;">
+                                    لغو
+                                </button>
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </div>
+            </form>
+        }
+        <div style="margin-bottom: 30px">
+            <table id="InputOutputInfoTable" class="table table-striped table-bordered table-hover"></table>
+        </div>
+
+    </div>
+</div>

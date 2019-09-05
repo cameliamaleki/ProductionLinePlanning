@@ -1,0 +1,227 @@
+﻿@model ProductionLineBalancing.Models.RoutInfo.RoutInfoModel
+@using CRMCore;
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        var MASTERID = $("#RoutID").val();
+        LoadRoutInfoGrid();
+        if (MASTERID == "") {
+            LoadRoutFacilityInfoDetail(0);
+            LoadRoutChildParentInfoDetail(0);
+        }
+        else {
+            LoadRoutFacilityInfoDetail(MASTERID);
+            LoadRoutChildParentInfoDetail(MASTERID);
+        }
+
+
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+
+        $("#RegisteredDate").datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+
+        $('#btnnewRoutFacility').prop('disabled', true);
+
+
+        $("#PartID").change(function (e) {
+            if ($("#PartID").val() == 0) {
+                $('#btnnewRoutFacility').prop('disabled', true);
+                $('#btnnewRoutChildParent').prop('disabled', true);
+            }
+            else {
+                $('#btnnewRoutFacility').prop('disabled', false);
+                $('#btnnewRoutChildParent').prop('disabled', false);
+            }
+
+
+        });
+    });
+    $(document).change(function (e) {
+        if ($("WorkStationID").val() == "" || $("PartID").val() == "") {
+            $('btnnewRoutFacility').prop('disabled', true);
+            $('btnnewRoutChildParent').prop('disabled', true);
+        }
+        else {
+            $('btnnewRoutFacility').prop('disabled', false);
+            $('btnnewRoutChildParent').prop('disabled', false);
+        }
+    });
+
+</script>
+<style>
+    .labelcls {
+        width: 100px !important;
+        font-size: 12px !important;
+        font-family: 'b yekan', Helvetica, Sans-Serif !important;
+        direction: rtl;
+        float: right;
+        margin-right: 0px !important;
+        text-align: right !important;
+    }
+
+    .textboxcls {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+
+    .m-btmcls {
+        margin-bottom: 5px !important;
+    }
+
+    .btmcls {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="page-header" dir="rtl">
+    <small>ثبت و نمایش جزئیات مربوط به دستگاه تولیدی قطعه</small>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-external-link-square"></i>
+
+        <div class="panel-tools">
+            <a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
+            <a class="btn btn-xs btn-link panel-config" href="#panel-config" data-toggle="modal">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-refresh" href="#">
+                <i class="fa fa-refresh"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-expand" href="#">
+                <i class="fa fa-resize-full"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-close" href="#">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div style="display: block;" class="panel-body">
+        @using (Html.BeginForm("Create", "RoutInfo", FormMethod.Post, new { id = "frmRoutInfo", @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+
+
+            @Html.HiddenFor(model => model.RoutID)
+            <form action="#" role="form" id="form">
+                @*<div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+
+                <label class="col-sm-2 labelcls">
+                    @Html.LabelFor(model => model.UserID)
+                </label>
+                <div class="col-sm-2">
+                    @Html.TextBoxFor(model => model.UserID, new { @class = "textboxcls ", disabled = true })
+                </div>
+                <label class="col-sm-2 labelcls">
+                    @Html.LabelFor(model => model.RegisteredDate)
+                </label>
+                <div class="col-sm-2">
+                    @Html.TextBoxFor(model => model.RegisteredDate, new { @class = "textboxcls ", disabled = true })
+                </div>
+
+            </div>
+        </div>
+    </div>*@
+                <div class="row ">
+                    <div class="col-md-12">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 labelcls">
+                               نام دستگاه
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.RoutName, new { @class = "textboxcls chvalid" })
+                            </div>
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.WorkStationID)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.DropDownListFor(model => model.WorkStationID, new ProductionLineBalancing.Models.RoutInfo.RoutInfo().RoutWorkStationCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen chvalid" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 labelcls">
+                            نوع دستگاه
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.DropDownListFor(model => model.RoutTypeID, new ProductionLineBalancing.Models.RoutInfo.RoutInfo().RoutTypeCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen chvalid" })
+                            </div>
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.PartID)
+                            </label>
+                            <div class="col-sm-4">
+
+                                @Html.DropDownListFor(model => model.PartID, new ProductionLineBalancing.Models.RoutInfo.RoutInfo().RoutPartCombo().ToComboBoxListItem(q => q.Name, q => q.Value, false, ""), new { @class = "chosen chvalid" })
+
+                                @*   @Html.TextBoxFor(model => model.PartID)*@
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row ">
+                    <div class="form-group">
+
+                        <div class="col-md-2">
+
+                            <button id="btnnewRoutFacility" class="btn btn-purple ladda-button btmcls btn-block" type="button" style="margin-right: 100px; width: 500px;">
+                                <i class="fa fa-plus">&nbsp; </i>
+                                ثبت اطلاعات زمانی تسهیل
+                            </button>
+
+                        </div>
+                        @*<div class="col-md-2">
+
+                            <button id="btnnewRoutChildParent" class="btn btn-purple ladda-button btmcls btn-block" type="button" style="margin-right: 100px; width: 500px;">
+                                <i class="fa fa-plus">&nbsp; </i>
+                                ثبت سرخطوط
+                            </button>
+                        </div>*@
+                    </div>
+
+
+                    <div style="margin-bottom: 30px">
+                        <table id="RoutFacilityInfoTable" class="table table-striped table-bordered table-hover"></table>
+                    </div>
+
+                    <div style="margin-bottom: 30px">
+                        <table id="RoutChildParentInfoTable" class="table table-striped table-bordered table-hover"></table>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <button id="btnnewRout" class="btn btn-info ladda-button btmcls" type="submit" style="margin-right: 100px;">
+                            ذخیره
+                        </button>
+
+                    </div>
+                    @*<div class="col-md-2">
+                            <button id="btnSaveNewRout" class="btn btn-warning ladda-button btmcls" type="submit" style="margin-right: 100px;">
+                                جدید
+                            </button>
+                        </div>*@
+                    <div class="col-md-2">
+                        <button id="btnCleanRout" class="btn btn-danger ladda-button btmcls" type="submit" style="margin-right: 100px;">
+                            لغو
+                        </button>
+                    </div>
+                </div>
+            </form>
+        }
+        <div style="margin-bottom: 30px">
+            <table id="RoutInfoTable" class="table table-striped table-bordered table-hover"></table>
+        </div>
+
+    </div>
+</div>
+

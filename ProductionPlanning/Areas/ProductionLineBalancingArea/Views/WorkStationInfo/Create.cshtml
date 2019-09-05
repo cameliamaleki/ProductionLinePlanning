@@ -1,0 +1,151 @@
+﻿@model ProductionLineBalancing.Models.WorkStationInfo.WorkStationInfoModel
+@using CRMCore;
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        WorkStationInfoGrid = undefined;
+        LoadWorkStationInfoGrid();
+        $(".chosen").chosen({ width: "100%", minwidth: "25%" });
+    });
+
+</script>
+<style>
+    .labelcls
+    {
+        width: 100px !important;
+        font-size: 12px !important;
+        font-family: 'b yekan', Helvetica, Sans-Serif !important;
+        direction: rtl;
+        float: right;
+        margin-right: 0px !important;
+        text-align: right !important;
+    }
+
+    .textboxcls 
+    {
+        min-width: 10% !important; 
+        width: 100% !important;
+    }
+
+    .m-btmcls
+    {
+        margin-bottom: 5px !important;
+    }
+
+    .btmcls
+    {
+        min-width: 10% !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="page-header" dir="rtl">
+    <h1>ثبت اطلاعات ایستگاه کاری <small>ثبت و نمایش جزئیات مربوط به ایستگاه کاری</small></h1>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-external-link-square"></i>
+
+        <div class="panel-tools">
+            <a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
+            <a class="btn btn-xs btn-link panel-config" href="#panel-config" data-toggle="modal">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-refresh" href="#">
+                <i class="fa fa-refresh"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-expand" href="#">
+                <i class="fa fa-resize-full"></i>
+            </a>
+            <a class="btn btn-xs btn-link panel-close" href="#">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div style="display: block;" class="panel-body">
+        @using (Html.BeginForm("Create", "WorkStationInfo", FormMethod.Post, new { id = "frmWorkStationInfo", @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+
+
+            @Html.HiddenFor(model => model.WorkStationID)
+            <form action="#" role="form" id="form">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.UserID)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.UserID, new { @class = "textboxcls ", disabled = true })
+                            </div>
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.RegisteredDate)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.RegisteredDate, new { @class = "textboxcls ", disabled = true })
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col-md-12">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.WorkStationName)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextBoxFor(model => model.WorkStationName, new { @class = "textboxcls chvalid" })
+                            </div>
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.LocationID)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.DropDownListFor(model => model.LocationID, new ProductionLineBalancing.Models.WorkStationInfo.WorkStationInfo().LocationCombo().ToComboBoxListItem( q => q.Name,q => q.Value, false, ""), new { @class = "chosen" })
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 labelcls">
+                                @Html.LabelFor(model => model.WorkStationDesc)
+                            </label>
+                            <div class="col-sm-2">
+                                @Html.TextAreaFor(model => model.WorkStationDesc, new { @class = "textboxcls " })
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-2">
+                                <button id="btnnewWorkStation" class="btn btn-info ladda-button btmcls" type="submit" style="margin-right: 100px;">
+                                    ذخیره
+                                </button>
+
+                            </div>
+                            @*<div class="col-md-2">
+                                <button id="btnSaveNewWorkStation" class="btn btn-warning ladda-button btmcls" type="submit" style="margin-right: 100px;">
+                                    جدید
+                                </button>
+                            </div>*@
+                            <div class="col-md-2">
+                                <button id="btnCleanWorkStation" class="btn btn-danger ladda-button btmcls" type="submit" style="margin-right: 100px;">
+                                    لغو
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        }
+        <div style="margin-bottom: 30px">
+            <table id="WorkStationInfoTable" class="table table-striped table-bordered table-hover"></table>
+        </div>
+    </div>
+</div>
