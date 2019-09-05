@@ -1,0 +1,22 @@
+﻿@using Stimulsoft.Report.Mvc
+
+
+
+
+@{
+    ViewBag.Title = "Viewer";
+}
+
+<h2></h2>
+
+@Html.Stimulsoft().StiMvcViewer(
+new StiMvcViewerOptions (){
+    Theme=StiTheme.Office2013,
+   
+    ActionGetReportSnapshot="getsnapshotviwer",
+ActionViewerEvent="ViewerEvent",
+ActionPrintReport="PrintReport",
+ActionExportReport="ExportReport",
+ActionInteraction="Interactiom",
+
+})

@@ -1,0 +1,116 @@
+﻿<script type="text/javascript">
+
+    var CarId = 3;
+    var address = "";
+    if ($("#Contract_CNTID").val() != "0") {
+
+        var CntRowID = $('#ContractDetailGrid').DataTable().row($('#ContractDetailGrid tbody tr:first')).data().CNTRowID;
+        address = "/Contract/GetContractInsurance?CarTypeID=" + CarId + "&CntRowID=" + CntRowID
+    }
+    else {
+
+        address = "/Contract/GetContractInsurance?CarTypeID=" + CarId + "&CntRowID=0";
+    }
+    $(function () {
+        InsurState = -1;
+
+        var dt = $('#CotractInsurance').DataTable({
+            "processing": true,
+            "jQueryUI": false,
+            "scrollCollapse": true,
+            "paging": false,
+            "bAutoWidth": false,
+            "bSort": false,
+            "responsive": (IsMobileDevice) ? true : false,
+
+            "ajax": address,
+            "columns": [
+
+                {
+                    "data": "IDt",
+                    "title": "ردیف",
+                    "width": "150px"
+                },
+
+
+        {
+            "data": "Selected",
+            "title": "انتخاب",
+            "width": "150px"
+        },
+        {
+            "data": "free",
+            "title": "رایگان",
+            "width": "150px"
+        },
+         {
+             "data": "INSFromDate",
+             "title": "تاریخ",
+             "width": "150px"
+         },
+         {
+             "data": "InsName",
+             "title": "بیمه",
+             "width": "150px"
+         },
+        {
+            "data": "INSPRICE",
+            "title": "قیمت",
+            "width": "150px",
+            "render": $.fn.dataTable.render.number(',', '.', 0, 'ریال')
+        },
+          {
+              "data": "status",
+              "title": "وضعیت",
+              "width": "150px"
+          },
+
+            ],
+            "columnDefs": [
+             {
+                 "render": function (data, type, row) {
+                     //row.Mail_Subject
+                     console.log(row.free);
+                     if (row.free == 1)
+                         return "<input type='checkbox' data-value='' checked disabled/>";
+                     else
+                         return "<input type='checkbox' data-value='' />";
+                 },
+                 "targets": 2,
+             }, {
+                 "render": function (data, type, row) {
+                     //row.Mail_Subject
+                     console.log(row.Selected);
+                     if (row.Selected == 1)
+                         return "<input class='InsuranceContract' type='checkbox' data-IsFree='" + row.free + "' data-value='" + row.INSID + "' checked />";
+                     else
+                         return "<input class='InsuranceContract' type='checkbox' data-IsFree='" + row.free + "' data-value='" + row.INSID + "' />";
+                 },
+                 "targets": 1
+             }],
+            "createdRow": function (row, data, index) {
+                console.log(data);
+            },
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                $("td:first", nRow).html(iDisplayIndex + 1);
+                return nRow;
+            }
+        });
+        var detailRows = [];
+        $('#CotractInsurance tbody').on('click', 'tr', function () {
+            //Select Row
+
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+                dt.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                var row = dt.row($(this));
+            }
+        });
+    });
+</script>
+<table id="CotractInsurance"></table>
+
+<input type="button" id="ConfirmInsurance" value="تایید" class="btn btn-large  btn-info" />

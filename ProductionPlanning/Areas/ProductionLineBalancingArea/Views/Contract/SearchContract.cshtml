@@ -1,0 +1,68 @@
+﻿
+
+<script>
+    $(function (e) {
+        var address = "/Contract/GetContractMasterSearch";
+
+
+        var dt = $('#SearchContractMaster').DataTable({
+            "processing": true,
+            "jQueryUI": false,
+            "paging": true,
+            "scrollX": true, 
+            "bSort": false,
+            "responsive": (IsMobileDevice) ? true : false,
+            "serverSide": true,
+            "ajax": address,
+            "columns": [
+
+                {
+                    "title": "",
+                    "width": "50px"
+                },
+        {
+            "data": "CNTID",
+            "title": "شماره قرارداد",
+            "width": "50px"
+        },
+        {
+            "data": "CNTDate",
+            "title": "تاریخ قرارداد",
+            "width": "50px"
+        },
+         {
+             "data": "CustomerName",
+             "title": "نام مشتری",
+             "width": "150px"
+         },
+         {
+             "data": "AgencyDesc",
+             "title": "نام نمایندگی",
+             "width": "150px"
+         },
+        {
+            "data": "CNTSerial",
+            "title": "سریال قرارداد",
+            "width": "150px"
+        }, {
+
+        "data": "SaleRowDesc",
+            "title": "ردیف فروش",
+            "width": "150px"
+        }],
+            "columnDefs": [
+                {
+                    "render": function (data, type, row) {
+                        //row.Mail_Subject
+                        return "<span class='SelectSearchContract btn btn-primary' style='padding-left: 5px; padding-right: 5px; cursor: pointer;' data-id='" + row.CNTID + "'> انتخاب </span>";
+                    },
+                    "targets": 0,
+                }]
+        });
+    })
+</script>
+
+<div style="width:800px">
+    <table id="SearchContractMaster" style="width:100%"></table>
+</div>
+

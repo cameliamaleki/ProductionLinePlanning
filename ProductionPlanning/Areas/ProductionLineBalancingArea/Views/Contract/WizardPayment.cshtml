@@ -1,0 +1,533 @@
+﻿@using Core;
+@model Sell.ContractPayment.ContractPaymentCreateModel
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function (e) {
+
+        var SelectedContractIdd = 0;
+
+
+        $("#ContractPayment_CrCode").attr('readonly', 'readonly');
+
+        $("#btnConfirmPaymentW").prop("disabled", true);
+        $("#btnEditContractPaymentW").prop("disabled", true);
+        $("#btnDeleteContractPaymentW").prop("disabled", true);
+        $("#btnRejectContractPaymentW").prop("disabled", true);
+        $("#btnNewContractPaymentW").prop("disabled", false);
+
+        ChangeContractPaymentState(true);
+
+        if (SelectedContractIdd != 0) {
+            $.getJSON("/Contract/GetContractHeader/" + SelectedContractId, {}, function (data) {
+
+
+                var Record = data[0];
+                $("#ContractPaymentContract").selectpicker();
+                RefreshCombo("ContractPaymentContract", Record.Text, Record.Value, false);
+                $("#ContractPayment_F_CntId").val(Record.Value);
+
+                $("#ContractPaymentContract").trigger("change");
+            });
+        }
+        else {
+
+            $("#ContractPaymentContract").ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '/Contract/searchContractlist',
+                data: {}
+
+            }, {
+                processItems: function (data) {
+                    console.log(data);
+                    return data.results;
+                },
+                minLength: 1
+            });
+
+
+
+
+            $("#ContractPaymentCustomer").change(function (e) {
+                try {
+                    $("#ContractPaymentContract").chosen("destroy");
+                }
+                catch (e) { }
+
+                if ($("#ContractPaymentCustomer").val() == 0) {
+                    $("#ContractPaymentCustomer").ajaxChosen({
+                        dataType: 'json',
+                        type: 'POST',
+                        url: '/Contract/searchCustomers',
+                        data: {}
+
+                    }, {
+                        processItems: function (data) {
+                            console.log(data);
+                            return data.results;
+                        },
+                        minLength: 2
+                    });
+
+                }
+                LoadComboBox("/Contract/searchContractlistByCustomerID?CustomerId=" + $("#ContractPaymentCustomer").val(), "ContractPaymentContract", true, function () {
+
+                    $("#ContractPaymentContract").ajaxChosen({
+                        dataType: 'json',
+                        type: 'POST',
+                        url: '/Contract/searchContractlist',
+                        data: { CustomerId: $("#ContractPaymentCustomer").val() }
+
+                    }, {
+                        processItems: function (data) {
+                            console.log(data);
+                            return data.results;
+                        },
+                        minLength: 2
+                    });
+                });
+            });
+
+
+            $("#ContractPaymentCustomer").ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '/Contract/searchCustomers',
+                data: {}
+
+            }, {
+                processItems: function (data) {
+                    console.log(data);
+                    return data.results;
+                },
+                minLength: 2
+            });
+
+
+        }
+
+
+
+    })
+    //ContractPayment_F_Mpardakht
+
+
+    $(document).ready(function (e) {
+        SetLayout();
+        $("#MotamamDate").css({ "display": "none" });
+        $('#ContractPayment_CrDate,#ContractPayment_DocDate,#MotamamDate').datepicker({
+            buttonImageOnly: true,
+            dateFormat: 'yy/mm/dd'
+        }).mask("9999/99/99");
+
+        $("#ContractPayment_Money").number(true, 0);
+    });
+
+    //$("#ContractPayment_AccountNo,#ContractPayment_Money").mask("9999999999999999999999999");
+
+
+
+
+</script>
+
+
+<style>
+    .ww {
+        width: 75.358974%;
+    }
+</style>
+
+@using (Html.BeginForm("Create", "ContractPayment", FormMethod.Post, new { id = "frmCreateContractPaymentW", @class = "form-horizontal" }))
+{
+
+
+
+    @Html.HiddenFor(model => model.ContractPayment_CrID)
+
+    @Html.HiddenFor(model => model.ContractPayment_F_CntId)
+    @Html.HiddenFor(model => model.ContractPayment_F_CustVaset)
+    @Html.HiddenFor(model => model.ContractPayment_F_CustMotalebat)
+    @Html.HiddenFor(model => model.ContractPayment_FlagTypePay)
+    @Html.HiddenFor(model => model.ContractPayment_F_TypeOfDP)
+    @Html.HiddenFor(model => model.ContractPayment_RecidORPay)
+
+
+
+    <script type="text/javascript">
+
+
+
+
+
+
+    </script>
+
+
+
+
+
+
+    <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span15" style="float: right;direction:rtl">
+            <div class="form-horizontal">
+
+
+
+
+
+
+                <div class="user-line" style="margin-top:10px">
+                    <div class="slabel" style="width:100px">
+                        @Html.LabelFor(model => model.ContractPayment_CrCode)
+                    </div>
+
+
+                    @Html.TextBoxFor(model => model.ContractPayment_F_CNTRowID, new { @style = "display:none;" })
+                    @Html.TextBoxFor(model => model.ContractPayment_F_CntId, new { @style = "display:none;" })
+                    
+                    @Html.TextBoxFor(model => model.ContractPayment_CrCode, new { @class = "span4 TextBoxAsLabel", @style = "color:red;" })
+
+
+
+
+                    @Html.ValidationMessageFor(model => model.ContractPayment_CrCode)
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <table id="ContractPaymentGridW"></table>
+    <div class="row-fluid">
+
+    </div>
+
+    <div class="row-fluid">
+        <div class="span4" style="float: right">
+            <div class="user-title" style="margin-top: 0px; float: right">
+                نوع دریافت و پرداخت
+            </div>
+
+            <div class="form-horizontal">
+                <div class="user-line" style="margin-top: 50px">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractPayment_F_TypeOfDoc)
+                    </div>
+                    @Html.DropDownListFor(model => model.ContractPayment_F_TypeOfDoc, new Sell.PyCodes.DocuumentType().GetAll().ToComboBoxListItem(p => p.pt_desc, p => p.pyprmtfllD, false, ""), new { @class = "chosen" })
+                    @Html.ValidationMessageFor(model => model.ContractPayment_F_TypeOfDoc)
+                </div>
+                <div class="user-line">
+                    @* <div class="slabel">
+                            @Html.LabelFor(model => model.ContractPayment_RecidORPay)
+                        </div>*@
+
+                    <div class="slabel">
+                        رسید
+                        @Html.RadioButton("ContractPayment_RecidORPaySelector", 1)
+                    </div>
+                    @Html.DropDownList("ContractPayment_RecidORPayRe", new Sell.PyCodes.ArticleType().GetAll(0, 12).ToComboBoxListItem(p => p.Text, p => p.Value, false, ""), new { @class = "span10 chosen", data_placeHolder = "انتخاب کنید" })
+                </div>
+                <div class="user-line">
+
+
+                    <div class="slabel">
+                        استرداد
+                        @Html.RadioButton("ContractPayment_RecidORPaySelector", 2)
+                    </div>
+                    @Html.DropDownList("ContractPayment_RecidORPayEs", new Sell.Agents.Agents().GetAllList(0).ToComboBoxListItem(model => model.Agent_SmSName, model => model.Agent_AGNID, true, ""), new { @class = "span10 chosen", data_placeHolder = "انتخاب کنید" })
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="span8" style="float: right">
+            <div class="user-title" style="margin-top: 0px; float: right">
+                تاریخ ثبت سند
+            </div>
+
+            <div class="form-horizontal" style="direction: rtl;margin-top:50px">
+
+                <div class="user-line" style="margin-right: 60px;height:30px">
+                    <div class="slabel" style="width:70px">
+                        @Html.RadioButton("DayDate", 1)
+
+                        تاریخ روز
+                    </div>
+
+                    @Html.EditorFor(model => model.ContractPayment_CrDate, new { @class = "span4 " })
+
+
+                    @Html.ValidationMessageFor(model => model.ContractPayment_CrDate)
+
+                </div>
+
+                <div class="user-line" style="margin-right: 60px;height:30px;">
+                    <div class="slabel" style="width:70px">
+                        @Html.RadioButton("DayDate", 2)
+                        تاریخ متمم
+                    </div>
+                    @Html.TextBox("MotamamDate", "", new { @class = "span4 " })
+                </div>
+                <div class="user-line" style="margin-right: 60px;">
+                    <div class="slabel" style="width:20px">
+                        @Html.CheckBox("Check_ContractPayment_FlagTypePay", true)
+
+                    </div>
+                    بابت قرارداد جدید
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @* <div class="user-line">
+            <div class="slabel">
+                @Html.LabelFor(model => model.ContractPayment_F_TypeOfDP)
+            </div>
+
+            @Html.DropDownListFor(model => model.ContractPayment_F_TypeOfDP, new Sell.PyCodes.BankName().GetAll().ToComboBoxListItem(p => p.pt_desc, p => p.pyprmtfllD, false, ""), new { @class = "span6 chosen" })
+            @Html.ValidationMessageFor(model => model.ContractPayment_F_TypeOfDP)
+
+        </div>*@
+    <div class="row-fluid">
+        <div class="span4" style="float: right">
+            <div class="user-title" style="margin-top: 0px; float: right">
+                اطلاعات حساب
+            </div>
+
+            <div class="form-horizontal" style="">
+                <div class="user-line" style="margin-top: 50px;padding:0px !important">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractPayment_DocDate)
+                    </div>
+
+                    @Html.EditorFor(model => model.ContractPayment_DocDate, new { @class = "span6" })
+                    @Html.ValidationMessageFor(model => model.ContractPayment_DocDate)
+
+                </div>
+
+                <div class="user-line" style="padding:0px !important">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractPayment_DocNo)
+                    </div>
+
+                    @Html.EditorFor(model => model.ContractPayment_DocNo, new { @class = "span6" })
+                    @Html.ValidationMessageFor(model => model.ContractPayment_DocNo)
+
+                </div>
+                <div class="user-line" style="padding:0px !important">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractPayment_AccountNo)
+                    </div>
+
+                    @Html.EditorFor(model => model.ContractPayment_AccountNo, new { @class = "span6" })
+                    @Html.ValidationMessageFor(model => model.ContractPayment_AccountNo)
+
+                </div>
+            </div>
+        </div>
+        <div class="span4" style="float: right; margin-top: 50px">
+            <div class="form-horizontal">
+
+                <div class="user-line" style="direction: rtl; padding:0px !important">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractPayment_F_BankID)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.ContractPayment_F_BankID, new Sell.PyCodes.BankName().GetAll().ToComboBoxListItem(p => p.pt_desc, p => p.pyprmtfllD, false, ""), new { @class = "span6 chosen" })
+                    @Html.ValidationMessageFor(model => model.ContractPayment_F_BankID)
+
+                </div>
+
+
+                <div class="user-line" style="padding:0px !important">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractPayment_F_BranchID)
+                    </div>
+
+                    @Html.EditorFor(model => model.ContractPayment_F_BranchID, new { @class = "span6" })
+                    @Html.ValidationMessageFor(model => model.ContractPayment_F_BranchID)
+
+                </div>
+                <div class="user-line" style="padding:0px !important">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractPayment_Money)
+                    </div>
+
+                    ریال   @Html.EditorFor(model => model.ContractPayment_Money, new { @class = "span6" })
+                    @Html.ValidationMessageFor(model => model.ContractPayment_Money)
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="span4" style="float: right; margin-top: 50px">
+            <div class="form-horizontal">
+                <div class="user-line" style="padding:0px !important">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractPayment_F_TypeOfAcc)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.ContractPayment_F_TypeOfAcc, new Sell.PyCodes.AcountType().GetAll().ToComboBoxListItem(p => p.pt_desc, p => p.pyprmtfllD, false, ""), new { @class = "span6 chosen" })
+                    @Html.ValidationMessageFor(model => model.ContractPayment_F_TypeOfAcc)
+
+                </div>
+                <div class="user-line" style="padding:0px !important">
+                    <div class="slabel">
+                        @Html.LabelFor(model => model.ContractPayment_F_Mpardakht)
+                    </div>
+
+                    @Html.DropDownListFor(model => model.ContractPayment_F_Mpardakht, new List<SelectListItem>(), new { @class = "span6 chosen" })
+                    @Html.ValidationMessageFor(model => model.ContractPayment_F_Mpardakht)
+
+                </div>
+
+                @* <div class="user-line">
+                        <div class="slabel">
+                            @Html.LabelFor(model => model.ContractPayment_AnuncmentDate)
+                        </div>
+
+                        @Html.EditorFor(model => model.ContractPayment_AnuncmentDate, new { @class = "span6" })
+                        @Html.ValidationMessageFor(model => model.ContractPayment_AnuncmentDate)
+
+                    </div>*@
+
+            </div>
+        </div>
+
+    </div>
+    <div class="row-fluid">
+        <div class="span8" style="float: right">
+            <div class="form-horizontal">
+
+                <div class="user-line" style="direction:rtl;padding:0px !important">
+                    <div class="slabel" style="margin-left:10px;width:108px">
+                        @Html.LabelFor(model => model.ContractPayment_Description)
+                    </div>
+
+                    @Html.TextBoxFor(model => model.ContractPayment_Description, new { @class = "span9 ww" })
+                    @Html.ValidationMessageFor(model => model.ContractPayment_Description)
+
+                </div>
+
+            </div>
+        </div>
+
+        @* <div class="user-line">
+                <div class="slabel">
+                    @Html.LabelFor(model => model.ContractPayment_ProfitDate)
+                </div>
+
+                @Html.EditorFor(model => model.ContractPayment_ProfitDate, new { @class = "span6" })
+                @Html.ValidationMessageFor(model => model.ContractPayment_ProfitDate)
+
+            </div>*@
+    </div>
+
+
+    <div class="row-fluid">
+        <div class="span8" style="float: right">
+            <div class="form-horizontal">
+
+                <div class="user-line" style="direction:rtl;padding:0px !important">
+                    <div class="slabel" style="margin-left:10px;width:108px">
+
+                    </div>
+
+                    <span id="ContractPaymentP"></span>
+                    <span id="ContractPaymentD"></span>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    @*<div class="span4" style="float: right">
+                <div class="form-horizontal">
+
+                    <div class="user-line">
+                        <div class="slabel">
+                            @Html.LabelFor(model => model.ContractPayment_F_BankCoId)
+                        </div>
+
+                        @Html.DropDownListFor(model => model.ContractPayment_F_BankCoId, new Sell.PyCodes.BankName().GetAll().ToComboBoxListItem(p => p.pt_desc, p => p.pyprmtfllD, false, ""), new { @class = "span6 chosen" })
+                        @Html.ValidationMessageFor(model => model.ContractPayment_F_BankCoId)
+
+                    </div>
+                    <div class="user-line">
+                        <div class="slabel">
+                            @Html.LabelFor(model => model.ContractPayment_F_BranchCoId)
+                        </div>
+
+                        @Html.DropDownListFor(model => model.ContractPayment_F_BranchCoId, new Sell.PyCodes.BankName().GetAll().ToComboBoxListItem(p => p.pt_desc, p => p.pyprmtfllD, false, ""), new { @class = "span6 chosen" })
+                        @Html.ValidationMessageFor(model => model.ContractPayment_F_BranchCoId)
+
+                    </div>
+                    <div class="user-line">
+                        <div class="slabel">
+                            @Html.LabelFor(model => model.ContractPayment_F_AccNoCoId)
+                        </div>
+
+                        @Html.DropDownListFor(model => model.ContractPayment_F_AccNoCoId, new Sell.PyCodes.BankName().GetAll().ToComboBoxListItem(p => p.pt_desc, p => p.pyprmtfllD, false, ""), new { @class = "span6 chosen" })
+                        @Html.ValidationMessageFor(model => model.ContractPayment_F_AccNoCoId)
+
+                    </div>
+                    <div class="user-line">
+                        <div class="slabel">
+                            @Html.LabelFor(model => model.ContractPayment_DelayDate)
+                        </div>
+
+                        @Html.EditorFor(model => model.ContractPayment_DelayDate, new { @class = "span6" })
+                        @Html.ValidationMessageFor(model => model.ContractPayment_DelayDate)
+
+                    </div>
+                    <div class="user-line">
+                        <div class="slabel">
+                            @Html.LabelFor(model => model.ContractPayment_AnuncmentNum)
+                        </div>
+
+                        @Html.EditorFor(model => model.ContractPayment_AnuncmentNum, new { @class = "span6" })
+                        @Html.ValidationMessageFor(model => model.ContractPayment_AnuncmentNum)
+
+                    </div>
+
+                </div>
+            </div>
+        </div>*@
+
+
+    <div class="row-fluid" style="">
+        <div class="span2" id="span2" style="float: right; margin-right: 5.564%; text-align: center; margin-left: 2.76243%;">
+            <input type="button" class=" btn btn-large btn-block btn-primary" style="color: white" id="btnNewContractPaymentW" value="جدید" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-info" style="color: white" id="btnEditContractPaymentW" value="ویرایش" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-warning" style="color: white" id="btnRejectContractPaymentW" value="ابطال" />
+            <div style="display:none;float:right;" id="ContractPaymentDeleteDialog">مایل به غیر فعال کردن پرداختی هستید ؟</div>
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-primary" style="color: white" id="btnConfirmPaymentW" value="تایید" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-danger" style="color: white" id="btnCancelPaymentW" value="انصراف" />
+        </div>
+        <div class="span2" style="float: right; text-align: center;">
+            <input type="button" class=" btn btn-large btn-block btn-danger" style="color: white" id="btnClearPaymentW" value="پاک کردن" />
+        </div>
+        @*<div class="span2" style="float: right; text-align: center;">
+                <input type="button" class=" btn btn-large btn-block btn-danger" style="color: white" id="btnSendPayment" value="انتقال وجه" />
+            </div>*@
+    </div>
+}
+

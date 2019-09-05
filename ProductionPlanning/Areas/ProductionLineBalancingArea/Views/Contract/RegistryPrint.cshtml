@@ -1,0 +1,59 @@
+﻿@using Core
+@model Sell.Contract.RegistryPrint
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        SetLayout();
+    });
+    </script>
+
+<style>
+    .ww {
+        min-width: 500px;
+    }
+</style>
+
+@using (Html.BeginForm("Create", "Cars", FormMethod.Post, new { id = "frmregistryprint", @class = "form-horizontal" }))
+{
+        <div class="row-fluid" style="float: right; margin-bottom: 20px;">
+        <div class="span8" style="float: right">
+            <div class="form-horizontal" style="margin-left: 30px;">
+                <div class="user-line">
+                    <div class="slabel">
+            @Html.LabelFor(model => model.RP_Customer)
+        </div>
+      
+            @Html.DropDownListFor(model => model.RP_Customer, new Sell.ContractCustomer.ContractCustomer().GetAllList(10).ToComboBoxListItem(model => model.CMName, model => model.CMID, true, ""), new { @class = "span10 chosen ww", data_placeHolder = "انتخاب کنید" })
+            @Html.ValidationMessageFor(model => model.RP_Customer)
+        </div>
+                     <div class="user-line">
+        <div class="slabel">
+            @Html.LabelFor(model => model.Rp_Contract)
+        </div>
+       
+            @Html.DropDownListFor(model => model.Rp_Contract, new Sell.ContractCustomer.ContractCustomer().GetAllList(10).ToComboBoxListItem(model => model.CMName, model => model.CMID, true, ""), new { @class = "span10 chosen ww", data_placeHolder = "انتخاب کنید" })
+            @Html.ValidationMessageFor(model => model.Rp_Contract)
+        </div>
+                     <div class="user-line">
+        <div class="slabel">
+            @Html.LabelFor(model => model.Rp_ContractDetail)
+        </div>
+       
+            @Html.DropDownListFor(model => model.Rp_ContractDetail, new Sell.ContractCustomer.ContractCustomer().GetAllList(10).ToComboBoxListItem(model => model.CMName, model => model.CMID, true, ""), new { @class = "span10 chosen ww", data_placeHolder = "انتخاب کنید" })
+            @Html.ValidationMessageFor(model => model.Rp_ContractDetail)
+        </div>
+</div>
+            </div>
+            </div>
+         
+      <div class="row-fluid" style="">
+ <div class="span2" id="span2" style="float: right;
+margin-right: 5.564%;
+text-align: center;
+margin-top: 20px;margin-bottom: 20px;margin-left: 2.76243%;">
+
+
+             <a href="javascript:;" class=" btn btn-large  btn-block btn-primary" id="btnsaveaddress" style="width:100%;/*background-repeat:repeat*/" >مشاهده</a>
+        </div>
+  </div>
+}
+
